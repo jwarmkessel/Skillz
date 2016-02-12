@@ -1,9 +1,9 @@
 //
 //  ViewController.swift
-//  Skillz
+//  VideoPlayRecord
 //
-//  Created by Justin Warmkessel on 1/13/16.
-//  Copyright © 2016 Justin Warmkessel. All rights reserved.
+//  Created by Andy (Test) on 1/31/15.
+//  Copyright (c) 2015 Ray Wenderlich. All rights reserved.
 //
 
 import UIKit
