@@ -13,8 +13,8 @@
 		7B04F1441C4750BB003C2E03 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 7B04F1431C4750BB003C2E03 /* Assets.xcassets */; };
 		7B04F1471C4750BB003C2E03 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 7B04F1451C4750BB003C2E03 /* LaunchScreen.storyboard */; };
 		7B04F1521C4750BB003C2E03 /* SkillzTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B04F1511C4750BB003C2E03 /* SkillzTests.swift */; };
-		7B04F1671C475614003C2E03 /* RecordVideoViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B04F1611C475614003C2E03 /* RecordVideoViewController.swift */; };
 		7B04F1691C475614003C2E03 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B04F1641C475614003C2E03 /* ViewController.swift */; };
+		7B0F5A541C7D66C20059581D /* RecordVideoViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B0F5A531C7D66C20059581D /* RecordVideoViewController.swift */; };
 		7B3CB0441C5043780025EF7D /* FeedModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B3CB0431C5043780025EF7D /* FeedModel.swift */; };
 		7B4E65D41C7C0AE100F05662 /* VideoPreviewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B4E65D31C7C0AE100F05662 /* VideoPreviewCell.swift */; };
 		7B4E65D61C7C0B1900F05662 /* VideoPreviewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 7B4E65D51C7C0B1900F05662 /* VideoPreviewCell.xib */; };
@@ -24,7 +24,6 @@
 		7B7842CA1C75932300D5E8C5 /* WatchAndSpeakController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B7842C91C75932300D5E8C5 /* WatchAndSpeakController.swift */; };
 		7BC260801C5EDAE9006070F7 /* video1.mp4 in Resources */ = {isa = PBXBuildFile; fileRef = 7BC2607E1C5EDAE9006070F7 /* video1.mp4 */; };
 		7BC260811C5EDAE9006070F7 /* video2.mp4 in Resources */ = {isa = PBXBuildFile; fileRef = 7BC2607F1C5EDAE9006070F7 /* video2.mp4 */; };
-		7BF9D2341C4757EC00AAE727 /* CapturePhotoViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BF9D2321C4757EC00AAE727 /* CapturePhotoViewController.swift */; };
 		7BF9D2371C475F4A00AAE727 /* VideoCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BF9D2361C475F4A00AAE727 /* VideoCell.swift */; };
 /* End PBXBuildFile section */
 
@@ -50,8 +49,8 @@
 		7B04F1511C4750BB003C2E03 /* SkillzTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SkillzTests.swift; sourceTree = "<group>"; };
 		7B04F1531C4750BB003C2E03 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		7B04F15C1C4751D7003C2E03 /* Skillz.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = Skillz.entitlements; sourceTree = "<group>"; };
-		7B04F1611C475614003C2E03 /* RecordVideoViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RecordVideoViewController.swift; sourceTree = "<group>"; };
 		7B04F1641C475614003C2E03 /* ViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
+		7B0F5A531C7D66C20059581D /* RecordVideoViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RecordVideoViewController.swift; sourceTree = "<group>"; };
 		7B3CB0431C5043780025EF7D /* FeedModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FeedModel.swift; sourceTree = "<group>"; };
 		7B4E65D31C7C0AE100F05662 /* VideoPreviewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VideoPreviewCell.swift; sourceTree = "<group>"; };
 		7B4E65D51C7C0B1900F05662 /* VideoPreviewCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = VideoPreviewCell.xib; sourceTree = "<group>"; };
@@ -61,7 +60,6 @@
 		7B7842C91C75932300D5E8C5 /* WatchAndSpeakController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WatchAndSpeakController.swift; sourceTree = "<group>"; };
 		7BC2607E1C5EDAE9006070F7 /* video1.mp4 */ = {isa = PBXFileReference; lastKnownFileType = file; path = video1.mp4; sourceTree = "<group>"; };
 		7BC2607F1C5EDAE9006070F7 /* video2.mp4 */ = {isa = PBXFileReference; lastKnownFileType = file; path = video2.mp4; sourceTree = "<group>"; };
-		7BF9D2321C4757EC00AAE727 /* CapturePhotoViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CapturePhotoViewController.swift; sourceTree = "<group>"; };
 		7BF9D2361C475F4A00AAE727 /* VideoCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VideoCell.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -107,14 +105,13 @@
 				7BC2607E1C5EDAE9006070F7 /* video1.mp4 */,
 				7BC2607F1C5EDAE9006070F7 /* video2.mp4 */,
 				7B04F1391C4750BB003C2E03 /* AppDelegate.swift */,
-				7BF9D2321C4757EC00AAE727 /* CapturePhotoViewController.swift */,
-				7B04F1611C475614003C2E03 /* RecordVideoViewController.swift */,
 				7B04F1641C475614003C2E03 /* ViewController.swift */,
 				7B3CB0431C5043780025EF7D /* FeedModel.swift */,
 				7BF9D2361C475F4A00AAE727 /* VideoCell.swift */,
 				7B7842C51C7591CA00D5E8C5 /* WatchAndSpeakModel.swift */,
 				7B7842C91C75932300D5E8C5 /* WatchAndSpeakController.swift */,
 				7B04F15C1C4751D7003C2E03 /* Skillz.entitlements */,
+				7B0F5A531C7D66C20059581D /* RecordVideoViewController.swift */,
 				7B04F13D1C4750BB003C2E03 /* Main.storyboard */,
 				7B04F1431C4750BB003C2E03 /* Assets.xcassets */,
 				7B04F1451C4750BB003C2E03 /* LaunchScreen.storyboard */,
@@ -251,10 +248,9 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				7BF9D2341C4757EC00AAE727 /* CapturePhotoViewController.swift in Sources */,
+				7B0F5A541C7D66C20059581D /* RecordVideoViewController.swift in Sources */,
 				7BF9D2371C475F4A00AAE727 /* VideoCell.swift in Sources */,
 				7B7842C61C7591CA00D5E8C5 /* WatchAndSpeakModel.swift in Sources */,
-				7B04F1671C475614003C2E03 /* RecordVideoViewController.swift in Sources */,
 				7B4E65D41C7C0AE100F05662 /* VideoPreviewCell.swift in Sources */,
 				7B04F1421C4750BB003C2E03 /* Skillz.xcdatamodeld in Sources */,
 				7B7842CA1C75932300D5E8C5 /* WatchAndSpeakController.swift in Sources */,
