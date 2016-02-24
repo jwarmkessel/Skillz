@@ -81,6 +81,13 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		361A0FE71C7D757000838E39 /* DataModel */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = DataModel;
+			sourceTree = "<group>";
+		};
 		7B04F12D1C4750BB003C2E03 = {
 			isa = PBXGroup;
 			children = (
@@ -102,6 +109,7 @@
 		7B04F1381C4750BB003C2E03 /* Skillz */ = {
 			isa = PBXGroup;
 			children = (
+				361A0FE71C7D757000838E39 /* DataModel */,
 				7BC2607E1C5EDAE9006070F7 /* video1.mp4 */,
 				7BC2607F1C5EDAE9006070F7 /* video2.mp4 */,
 				7B04F1391C4750BB003C2E03 /* AppDelegate.swift */,
