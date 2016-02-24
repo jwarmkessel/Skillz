@@ -363,7 +363,7 @@ class RecordVideoViewController: UIViewController {
                         print("cancelled \(exporter.error)")
                     default:
                         print("complete")
-                        self.tabBarController?.selectedIndex = 0
+                        self.tabBarController?.selectedIndex = 1
                     }
                     
                     dispatch_async(dispatch_get_main_queue(), { () -> Void in
