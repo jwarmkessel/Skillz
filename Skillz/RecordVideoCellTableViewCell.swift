@@ -95,8 +95,6 @@ class RecordVideoCellTableViewCell: UITableViewCell {
             movieFileOutput?.startRecordingToOutputFileURL(newURL, recordingDelegate: self)
         }
     }
-
-    
     
     func configureProgressView() {
         let transform : CGAffineTransform  = CGAffineTransformMakeScale(1.0, 50.0);
@@ -159,8 +157,6 @@ class RecordVideoCellTableViewCell: UITableViewCell {
         //TODO: delete this code
         //let currentOrientation = UIDevice.currentDevice().orientation
         UIDevice.currentDevice().endGeneratingDeviceOrientationNotifications()
-        
-        
         
         previewLayer?.connection.videoOrientation = .Portrait
         videoPreviewViewControl.layer.addSublayer(previewLayer!)
@@ -378,11 +374,8 @@ class RecordVideoCellTableViewCell: UITableViewCell {
                     })
                     })
             }
-            
-            
         }
     }
-    
 }
 
 extension RecordVideoCellTableViewCell: AVCaptureVideoDataOutputSampleBufferDelegate, AVCaptureFileOutputRecordingDelegate {

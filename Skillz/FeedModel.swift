@@ -58,32 +58,69 @@ class FeedModel: NSObject {
     }
     
     func pathsForAllVideos () -> [AnyObject?]? {
-        let url = NSFileManager.defaultManager().URLsForDirectory(.DocumentDirectory, inDomains: .UserDomainMask)[0]
+        
         var array : [AnyObject?]? = [String]()
         
-        let properties = [NSURLLocalizedNameKey, NSURLCreationDateKey, NSURLLocalizedTypeDescriptionKey]
+        // We need just to get the documents folder url
+        let documentsUrl =  NSFileManager.defaultManager().URLsForDirectory(.DocumentDirectory, inDomains: .UserDomainMask).first!
         
-        print (url);
+        // now lets get the directory contents (including folders)
+        do {
+            let directoryContents = try NSFileManager.defaultManager().contentsOfDirectoryAtURL(documentsUrl, includingPropertiesForKeys: nil, options: NSDirectoryEnumerationOptions())
+            print(directoryContents)
+            
+        } catch let error as NSError {
+            print(error.localizedDescription)
+        }
+        // if you want to filter the directory contents you can do like this:
         
         do {
-            let directoryUrls = try NSFileManager.defaultManager().contentsOfDirectoryAtURL(url, includingPropertiesForKeys: properties, options:NSDirectoryEnumerationOptions.SkipsHiddenFiles)
+            let directoryUrls = try  NSFileManager.defaultManager().contentsOfDirectoryAtURL(documentsUrl, includingPropertiesForKeys: nil, options: NSDirectoryEnumerationOptions())
+            print(directoryUrls)
             
             array = directoryUrls.map(){
                 $0.lastPathComponent }.filter(){
                     ($0! as! NSString).pathExtension == "mp4"
             }
             
-            if array?.count == 0 {
-                state = .NoContent
-                
-                self.noContent = [["message": "No content available"]]
-                array = self.noContent
-            }
+        } catch let error as NSError {
+            print(error.localizedDescription)
         }
-        catch let error as NSError {
-            print(error.description)
-        }
+        
         return array
         
+    }
+    
+    func new () -> [AnyObject?]?
+    {
+        var array : [AnyObject?]? = [String]()
+        
+        // We need just to get the documents folder url
+        let documentsUrl =  NSFileManager.defaultManager().URLsForDirectory(.DocumentDirectory, inDomains: .UserDomainMask).first!
+        
+        // now lets get the directory contents (including folders)
+        do {
+            let directoryContents = try NSFileManager.defaultManager().contentsOfDirectoryAtURL(documentsUrl, includingPropertiesForKeys: nil, options: NSDirectoryEnumerationOptions())
+            print(directoryContents)
+            
+        } catch let error as NSError {
+            print(error.localizedDescription)
+        }
+        // if you want to filter the directory contents you can do like this:
+        
+        do {
+            let directoryUrls = try  NSFileManager.defaultManager().contentsOfDirectoryAtURL(documentsUrl, includingPropertiesForKeys: nil, options: NSDirectoryEnumerationOptions())
+            print(directoryUrls)
+            
+            array = directoryUrls.map(){
+                $0.lastPathComponent }.filter(){
+                    ($0! as! NSString).pathExtension == "mp4"
+            }
+            
+        } catch let error as NSError {
+            print(error.localizedDescription)
+        }
+        
+        return array
     }
 }

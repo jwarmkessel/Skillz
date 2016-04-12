@@ -29,6 +29,29 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
     var model : FeedModel?
     var tempVisibleCells : [UITableViewCell?]?
     
+    //MARK: ScrollViewDelegate
+    func scrollViewDidScroll(scrollView: UIScrollView) {
+        
+        print(self.tableView.visibleCells.count)
+        if let videoCell : VideoCell? = self.tableView.visibleCells.first as? VideoCell {
+            
+            let cellHeight = videoCell?.contentView.frame.size.height
+            print(cellHeight)
+            
+            let tableViewOffsetIncludingHeader = self.tableView.contentOffset.y + 64.0
+            print(tableViewOffsetIncludingHeader)
+            
+            if (tableViewOffsetIncludingHeader % 457 == 0) {
+                videoCell?.player?.pause()
+            }
+            
+        }
+    }
+    
+    func scrollViewWillBeginDragging(scrollView: UIScrollView) {
+        
+    }
+    
     //MARK: UIViewController
     override func viewWillAppear(animated: Bool) {
         super.viewWillAppear(animated)
@@ -263,37 +286,36 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         return nil
     }
     
-    func tableView(tableView: UITableView, didDeselectRowAtIndexPath indexPath: NSIndexPath) {
-        
-        self.performSegueWithIdentifier("videoHomework", sender: nil)
+    func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
+
     }
-    
+
     override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
-        if (segue.identifier == "videoHomework") {
-
-            let row = self.tableView.indexPathForSelectedRow?.row
-                
-            if let model = self.model, let vid = model.videos, let _ : AnyObject? = vid[row!] {
-                
-                
-                if let vidName : String = vid[row!] as? String {
-                    
-                    let videoPath = documentsURL.path! + "/" + vidName
-                    
-                    var isDir = ObjCBool(false)
-                    
-                    if NSFileManager.defaultManager().fileExistsAtPath(videoPath, isDirectory: &isDir) {
-                        
-                        let pathURL = NSURL.fileURLWithPath(videoPath)
-
-                        let watchAndSpeakModel : WatchAndSpeakModel = WatchAndSpeakModel.init(previewURL: pathURL)
-                        
-                        let watchAndSpeakController : WatchAndSpeakController = segue.destinationViewController as! WatchAndSpeakController
-                        watchAndSpeakController.model = watchAndSpeakModel
-                    }
-                }
-            }
-        }
+//        if (segue.identifier == "videoHomework") {
+//
+//            let row = self.tableView.indexPathForSelectedRow?.row
+//                
+//            if let model = self.model, let vid = model.videos, let _ : AnyObject? = vid[row!] {
+//                
+//                
+//                if let vidName : String = vid[row!] as? String {
+//                    
+//                    let videoPath = documentsURL.path! + "/" + vidName
+//                    
+//                    var isDir = ObjCBool(false)
+//                    
+//                    if NSFileManager.defaultManager().fileExistsAtPath(videoPath, isDirectory: &isDir) {
+//                        
+//                        let pathURL = NSURL.fileURLWithPath(videoPath)
+//
+//                        let watchAndSpeakModel : WatchAndSpeakModel = WatchAndSpeakModel.init(previewURL: pathURL)
+//                        
+//                        let watchAndSpeakController : WatchAndSpeakController = segue.destinationViewController as! WatchAndSpeakController
+//                        watchAndSpeakController.model = watchAndSpeakModel
+//                    }
+//                }
+//            }
+//        }
     }
 
 
@@ -329,6 +351,15 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         }
         
         return validCell;
+    }
+    
+    func tableView(tableView: UITableView,
+        didEndDisplayingCell cell: UITableViewCell,
+        forRowAtIndexPath indexPath: NSIndexPath) {
+            
+            if let videoCell : VideoCell? = cell as? VideoCell {
+                videoCell?.player?.pause()
+            }
     }
 }
 
