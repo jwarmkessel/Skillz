@@ -38,6 +38,15 @@ class RecordVideo : NSObject {
         }
     }
     
+    func setupMediaComponents () {
+        
+        self.createSession()
+        self.createSessionInput()
+        self.createAudioInput()
+        self.createSessionOutput()
+        self.createMovieFileOutput()
+    }
+    
     func checkDeviceMediaAvailability() -> Bool {
         var availability : Bool = false
         
@@ -110,13 +119,74 @@ class RecordVideo : NSObject {
         }
     }
     
-    func setupMediaComponents () {
+    func mixCompositionMerge() {
+        if let videos = self.arrayOfVideos as? [NSURL] {
+            
+            let mixcomposition : AVMutableComposition = AVMutableComposition()
+            
+            var current : CMTime = kCMTimeZero
+            
+            for url : NSURL in videos {
+                
+                let asset = AVURLAsset.init(URL: url)
+                
+                do {
+                    
+                    try mixcomposition.insertTimeRange(CMTimeRangeMake(kCMTimeZero, asset.duration), ofAsset: asset, atTime: current)
+                    
+                } catch {
+                    
+                    print("annoying")
+                    
+                }
+                
+                current = CMTimeAdd(current, asset.duration);
+                
+                //                let fileManager : NSFileManager = NSFileManager.defaultManager()
+                //                do {
+                //                    try fileManager.removeItemAtURL(url)
+                //                } catch {
+                //
+                //                    print("annoying")
+                //                }
+            }
+            
+            let exporter = AVAssetExportSession(asset: mixcomposition, presetName: AVAssetExportPresetHighestQuality)
+            
+            let newFileName = NSUUID().UUIDString
+            
+            if let exporter = exporter, let completeMovieURL = self.completedRecordingURLPath(newFileName){
+                
+                exporter.outputURL = completeMovieURL
+                exporter.outputFileType = AVFileTypeMPEG4 //AVFileTypeQuickTimeMovie
+                
+                exporter.exportAsynchronouslyWithCompletionHandler({
+                    
+                    [unowned self] in
+                    
+                    switch exporter.status {
+                    case  AVAssetExportSessionStatus.Failed:
+                        print("failed \(exporter.error)")
+                    case AVAssetExportSessionStatus.Cancelled:
+                        print("cancelled \(exporter.error)")
+                    default:
+                        print("complete")
+                    }
+                    })
+            }
+        }
+    }
+
+    func completedRecordingURLPath(fileName: String?) -> NSURL?{
         
-        self.createSession()
-        self.createSessionInput()
-        self.createAudioInput()
-        self.createSessionOutput()
-        self.createMovieFileOutput()
+        if let file = fileName {
+            
+            let path = documentsURL.path! + "/\(file).mp4"
+            
+            return NSURL(fileURLWithPath: path)
+        }
+        
+        return nil
     }
 }
 
