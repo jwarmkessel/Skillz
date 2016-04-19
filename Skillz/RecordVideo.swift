@@ -136,19 +136,11 @@ class RecordVideo : NSObject {
                     
                 } catch {
                     
+                    //FIXME: If there's an issue we may have to reprocess OR alert the user to the problem and how to solve (if can).
                     print("annoying")
-                    
                 }
                 
                 current = CMTimeAdd(current, asset.duration);
-                
-                //                let fileManager : NSFileManager = NSFileManager.defaultManager()
-                //                do {
-                //                    try fileManager.removeItemAtURL(url)
-                //                } catch {
-                //
-                //                    print("annoying")
-                //                }
             }
             
             let exporter = AVAssetExportSession(asset: mixcomposition, presetName: AVAssetExportPresetHighestQuality)
@@ -162,7 +154,7 @@ class RecordVideo : NSObject {
                 
                 exporter.exportAsynchronouslyWithCompletionHandler({
                     
-                    [unowned self] in
+//                    [unowned self] in
                     
                     switch exporter.status {
                     case  AVAssetExportSessionStatus.Failed:
@@ -187,6 +179,46 @@ class RecordVideo : NSObject {
         }
         
         return nil
+    }
+    
+    func deleteAllVideoSessionsInsideFolderPath() {
+        
+        var documentDirURL = self.documentsURL
+        
+        documentDirURL = documentDirURL.URLByAppendingPathComponent("recordingSession/")
+        documentDirURL = documentDirURL.URLByAppendingPathComponent("\(self.directoryName!)")
+
+        
+        let fileManager : NSFileManager = NSFileManager.init()
+        do {
+            let folderPath = documentDirURL.path!
+            let paths = try fileManager.contentsOfDirectoryAtPath(folderPath)
+            for path in paths
+            {
+                try fileManager.removeItemAtPath("\(folderPath)/\(path)")
+            }
+        } catch let error as NSError {
+            print(error.localizedDescription)
+        }
+        
+//        let fileManager : NSFileManager = NSFileManager.init()
+//        
+//        
+//        if (!fileManager.fileExistsAtPath(documentDirURL.path!)) {
+//            do {
+//                let folderPath = documentDirURL.path!
+//                let paths = try fileManager.contentsOfDirectoryAtPath(folderPath)
+//                for path in paths
+//                {
+//                    try fileManager.removeItemAtPath("\(folderPath)/\(path)")
+//                }
+//            } catch let error as NSError {
+//                print(error.localizedDescription)
+//            }
+//        }
+//        else {
+//            print("No file exists here.")
+//        }
     }
 }
 

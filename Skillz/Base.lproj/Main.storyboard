@@ -159,7 +159,6 @@
                                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                         <connections>
                                             <outlet property="videoImageView" destination="u95-t6-jKm" id="iIh-aW-0Qg"/>
-                                            <segue destination="bGH-Uo-AyG" kind="show" identifier="videoHomework" id="hbx-de-jzK"/>
                                         </connections>
                                     </tableViewCell>
                                 </prototypes>
@@ -192,37 +191,72 @@
         <!--Record View Controller-->
         <scene sceneID="gwg-7G-ePn">
             <objects>
-                <viewController id="bGH-Uo-AyG" customClass="RecordViewController" customModule="Skillz" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="recordViewController" id="bGH-Uo-AyG" customClass="RecordViewController" customModule="Skillz" customModuleProvider="target" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="Qaz-5j-9JP"/>
                         <viewControllerLayoutGuide type="bottom" id="YvS-Bi-93j"/>
                     </layoutGuides>
                     <view key="view" contentMode="scaleToFill" id="0I3-Hs-FQG">
-                        <rect key="frame" x="0.0" y="64" width="600" height="936"/>
+                        <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <progressView opaque="NO" contentMode="scaleToFill" verticalHuggingPriority="750" progress="0.5" translatesAutoresizingMaskIntoConstraints="NO" id="Jxu-RI-y5Q">
-                                <rect key="frame" x="0.0" y="0.0" width="600" height="2"/>
+                                <rect key="frame" x="0.0" y="20" width="600" height="2"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="2" id="ykP-uU-dX0"/>
                                 </constraints>
                             </progressView>
                             <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="URD-jS-c4w">
-                                <rect key="frame" x="0.0" y="2" width="600" height="885"/>
+                                <rect key="frame" x="0.0" y="22" width="600" height="578"/>
                             </imageView>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="SLh-x0-A3D">
+                                <rect key="frame" x="22" y="43" width="48" height="30"/>
+                                <state key="normal" title="Cancel"/>
+                                <connections>
+                                    <action selector="cancelButtonHandler:" destination="bGH-Uo-AyG" eventType="touchUpInside" id="ucL-9F-das"/>
+                                </connections>
+                            </button>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="ESe-Rx-Nu2">
+                                <rect key="frame" x="78" y="43" width="39" height="30"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="30" id="I87-65-88L"/>
+                                    <constraint firstAttribute="width" constant="39" id="yh8-D4-pGk"/>
+                                </constraints>
+                                <state key="normal" title="Reset"/>
+                                <connections>
+                                    <action selector="resetButtonHandler:" destination="bGH-Uo-AyG" eventType="touchUpInside" id="nf4-uV-775"/>
+                                </connections>
+                            </button>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="x9C-7J-W8H">
+                                <rect key="frame" x="480" y="38" width="100" height="40"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="100" id="J4W-cH-BKY"/>
+                                    <constraint firstAttribute="height" constant="40" id="veB-g5-ahS"/>
+                                </constraints>
+                                <state key="normal" title="Save"/>
+                                <connections>
+                                    <action selector="saveButtonHandler:" destination="bGH-Uo-AyG" eventType="touchUpInside" id="tQL-58-xtS"/>
+                                </connections>
+                            </button>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         <constraints>
                             <constraint firstItem="URD-jS-c4w" firstAttribute="leading" secondItem="0I3-Hs-FQG" secondAttribute="leading" id="Dmu-f7-of6"/>
                             <constraint firstAttribute="trailing" secondItem="URD-jS-c4w" secondAttribute="trailing" id="KsG-Fb-B8x"/>
+                            <constraint firstItem="SLh-x0-A3D" firstAttribute="top" secondItem="Jxu-RI-y5Q" secondAttribute="bottom" constant="21" id="ObD-h3-I73"/>
+                            <constraint firstItem="x9C-7J-W8H" firstAttribute="top" secondItem="Jxu-RI-y5Q" secondAttribute="bottom" constant="16" id="QQj-AK-3Fy"/>
                             <constraint firstItem="YvS-Bi-93j" firstAttribute="top" secondItem="URD-jS-c4w" secondAttribute="bottom" id="RaD-JE-CLi"/>
+                            <constraint firstAttribute="trailingMargin" secondItem="x9C-7J-W8H" secondAttribute="trailing" id="Udj-QT-cRR"/>
+                            <constraint firstItem="ESe-Rx-Nu2" firstAttribute="leading" secondItem="SLh-x0-A3D" secondAttribute="trailing" constant="8" id="YGt-JY-E53"/>
+                            <constraint firstItem="SLh-x0-A3D" firstAttribute="leading" secondItem="0I3-Hs-FQG" secondAttribute="leadingMargin" constant="2" id="abx-OC-6aj"/>
                             <constraint firstItem="Jxu-RI-y5Q" firstAttribute="top" secondItem="Qaz-5j-9JP" secondAttribute="bottom" id="bEd-5C-bts"/>
                             <constraint firstItem="URD-jS-c4w" firstAttribute="top" secondItem="Jxu-RI-y5Q" secondAttribute="bottom" id="dOS-wa-Kyu"/>
+                            <constraint firstItem="ESe-Rx-Nu2" firstAttribute="centerY" secondItem="SLh-x0-A3D" secondAttribute="centerY" id="fM8-MN-esl"/>
                             <constraint firstItem="Jxu-RI-y5Q" firstAttribute="trailing" secondItem="URD-jS-c4w" secondAttribute="trailing" id="mMK-kY-lOs"/>
                             <constraint firstItem="Jxu-RI-y5Q" firstAttribute="leading" secondItem="URD-jS-c4w" secondAttribute="leading" id="mXG-7w-b2G"/>
                         </constraints>
                     </view>
-                    <simulatedNavigationBarMetrics key="simulatedTopBarMetrics" translucent="NO" prompted="NO"/>
+                    <nil key="simulatedTopBarMetrics"/>
                     <connections>
                         <outlet property="progressView" destination="Jxu-RI-y5Q" id="2Kb-Op-Rjf"/>
                         <outlet property="videoPreviewViewControl" destination="URD-jS-c4w" id="QwI-6k-lrg"/>

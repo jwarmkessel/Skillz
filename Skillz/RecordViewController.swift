@@ -17,6 +17,34 @@ class RecordViewController: UIViewController {
     @IBOutlet weak var progressView: UIProgressView!
     @IBOutlet weak var videoPreviewViewControl: UIImageView!
     
+    @IBAction func cancelButtonHandler(sender: AnyObject) {
+        self.dismissViewControllerAnimated(true, completion: nil)
+    }
+    
+    func resetElapsedTime() {
+        model.elapsedProgressBarMovement = 0
+        model.elapsedTime = 0
+    }
+    
+    func removeAllComponentVideosBeingTracked() {
+        model.arrayOfVideos.removeAll()
+    }
+    
+    @IBAction func resetButtonHandler(sender: AnyObject) {
+        self.resetElapsedTime()
+        self.removeAllComponentVideosBeingTracked()
+        self.configureProgressView()
+        model.deleteAllVideoSessionsInsideFolderPath()
+        
+        self.view.userInteractionEnabled = true
+    }
+    
+    @IBAction func saveButtonHandler(sender: AnyObject) {
+        self.view.userInteractionEnabled = false
+        self.stopVideoRecording()
+        model.mixCompositionMerge()
+    }
+    
     func createPreviewLayerComponents() {
         UIDevice.currentDevice().beginGeneratingDeviceOrientationNotifications()
         
@@ -56,7 +84,6 @@ class RecordViewController: UIViewController {
                     self.model.arrayOfVideos.append(newURL)
                     model.movieFileOutput?.startRecordingToOutputFileURL(newURL, recordingDelegate: model)
                 }
-
             }
         }
     }

@@ -22,6 +22,8 @@ extension Float {
 
 class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSource {
   
+    let recordViewController : RecordViewController = RecordViewController()
+    
     @IBOutlet weak var tableView: UITableView!
  
     let kEstimatedRowHeight : CGFloat = 600.0
@@ -287,7 +289,10 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
     }
     
     func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
-
+        
+        let storyboard = UIStoryboard(name: "Main", bundle: nil)
+        let vc = storyboard.instantiateViewControllerWithIdentifier("recordViewController") as! RecordViewController
+        self.presentViewController(vc, animated: true, completion: nil)
     }
 
     override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
