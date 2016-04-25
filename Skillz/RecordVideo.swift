@@ -9,7 +9,12 @@
 import Foundation
 import AVFoundation
 
+protocol RecordVideoDelegate: class {
+    func didFinishTask(sender: RecordVideo)
+}
+
 class RecordVideo : NSObject {
+    weak var delegate:RecordVideoDelegate?
     var session         : AVCaptureSession?
     var movieFileOutput : AVCaptureMovieFileOutput?
     var dataOutput      : AVCaptureVideoDataOutput?
@@ -27,6 +32,8 @@ class RecordVideo : NSObject {
     let captureFramesPerSecond                          = 30.0
     var elapsedProgressBarMovement : Double             = 0
     var kTimerInterval : NSTimeInterval                 = 0.02
+
+    var completedVideoURL : NSURL?
     
     override init() {
         super.init()
@@ -154,7 +161,7 @@ class RecordVideo : NSObject {
                 
                 exporter.exportAsynchronouslyWithCompletionHandler({
                     
-//                    [unowned self] in
+                    [unowned self] in
                     
                     switch exporter.status {
                     case  AVAssetExportSessionStatus.Failed:
@@ -162,9 +169,12 @@ class RecordVideo : NSObject {
                     case AVAssetExportSessionStatus.Cancelled:
                         print("cancelled \(exporter.error)")
                     default:
-                        print("complete")
+                        
+                        self.completedVideoURL = completeMovieURL;
+                        
+                        self.delegate?.didFinishTask(self)
                     }
-                    })
+                })
             }
         }
     }

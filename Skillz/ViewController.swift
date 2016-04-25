@@ -46,7 +46,6 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
             if (tableViewOffsetIncludingHeader % 457 == 0) {
                 videoCell?.player?.pause()
             }
-            
         }
     }
     
@@ -55,6 +54,13 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
     }
     
     //MARK: UIViewController
+    
+    override func viewWillDisappear(animated: Bool) {
+        super.viewWillDisappear(animated)
+        
+        NSNotificationCenter.defaultCenter().removeObserver(self)
+    }
+    
     override func viewWillAppear(animated: Bool) {
         super.viewWillAppear(animated)
         
@@ -67,6 +73,7 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
             return
         }
 
+        feedModel.videos?.removeAll()
         feedModel.updateVideos()
         self.tableView.reloadData()
     }
@@ -94,13 +101,6 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         self.tableView.estimatedRowHeight   = kEstimatedRowHeight
         self.tableView.rowHeight            = UITableViewAutomaticDimension
     }
-    
-//    override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
-//        if segue.identifier == "segueRecordVideo" {
-//            let vc = segue.destinationViewController as! RecordVideoViewController
-//            vc.delegate = self
-//        }
-//    }
     
     //MARK: UITableViewDatasource
     func tableView(tableView: UITableView, heightForRowAtIndexPath indexPath: NSIndexPath) -> CGFloat {
@@ -136,7 +136,6 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
                 }
             }
         }
-
     }
     
     func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {

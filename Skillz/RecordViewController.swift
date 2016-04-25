@@ -10,10 +10,11 @@ import Foundation
 import UIKit
 import AVFoundation
 
-class RecordViewController: UIViewController {
+class RecordViewController: UIViewController, RecordVideoDelegate {
     var model           : RecordVideo                   = RecordVideo()
     var previewLayer    : AVCaptureVideoPreviewLayer?
     
+    @IBOutlet weak var previewView: UIView!
     @IBOutlet weak var progressView: UIProgressView!
     @IBOutlet weak var videoPreviewViewControl: UIImageView!
     
@@ -40,9 +41,13 @@ class RecordViewController: UIViewController {
     }
     
     @IBAction func saveButtonHandler(sender: AnyObject) {
-        self.view.userInteractionEnabled = false
         self.stopVideoRecording()
         model.mixCompositionMerge()
+    }
+    
+    func didFinishTask(sender: RecordVideo)
+    {        
+        self.performSegueWithIdentifier("previewVideo", sender: self)
     }
     
     func createPreviewLayerComponents() {
@@ -88,9 +93,21 @@ class RecordViewController: UIViewController {
         }
     }
     
+    override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
+
+        if (segue.identifier == "previewVideo") {
+            
+            if let completedVideoURL = model.completedVideoURL {
+                let previewVideo : PreviewVideo = PreviewVideo.init(url: completedVideoURL)
+
+                if let previewVideoVC : PreviewVideoController = segue.destinationViewController as? PreviewVideoController {
+                    previewVideoVC.model = previewVideo
+                }
+            }
+        }
+    }
+    
     func updateElapsedTime () {
-        
-        //let movementPerSecond : Double = Double(self.progressView.bounds.width)/750
         let percentagePerSecond : Double = 100.0 / (self.model.kMaxSecondsForVideo/self.model.kTimerInterval)
         
         self.model.elapsedProgressBarMovement += (percentagePerSecond / 100)
@@ -152,6 +169,21 @@ class RecordViewController: UIViewController {
     override func willMoveToParentViewController(parent: UIViewController?) {
         self.stopVideoRecording()
         model.mixCompositionMerge()
+    }
+    
+    func setupNotifications() {
+    }
+    
+    override func viewWillDisappear(animated: Bool) {
+        super.viewWillDisappear(animated)
+        
+        NSNotificationCenter.defaultCenter().removeObserver(self)
+    }
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        
+        self.model.delegate = self;
+        self.navigationController?.navigationBarHidden = true
     }
     
     override func viewWillAppear(animated: Bool) {

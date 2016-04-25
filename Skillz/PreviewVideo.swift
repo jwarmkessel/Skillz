@@ -14,4 +14,6 @@ class PreviewVideo {
     init(url : NSURL) {
         self.contentURL = url
     }
+    
+    
 }

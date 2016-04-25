@@ -86,7 +86,7 @@ class FeedModel: NSObject {
         } catch let error as NSError {
             print(error.localizedDescription)
         }
-        
+    
         return array
         
     }
