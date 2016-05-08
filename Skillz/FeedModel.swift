@@ -29,7 +29,7 @@ class FeedModel: NSObject {
     override init() {
         super.init()
         self.thumbnails = self.pathsForAllImages()
-        self.videos = self.pathsForAllVideos()
+//        self.videos = self.pathsForAllVideos()
     }
     
     func updateVideos() {

@@ -65,10 +65,10 @@ class RecordVideoViewController: UIViewController {
         self.view.userInteractionEnabled = true
         self.configureProgressView()
         
-        self.videoPreviewViewControl.addTarget(self, action: Selector("videoTouchDown:"), forControlEvents: .TouchDown)
-        self.videoPreviewViewControl.addTarget(self, action: Selector("videoTouchCancel:"), forControlEvents: .TouchCancel)
-        self.videoPreviewViewControl.addTarget(self, action: Selector("videoTouchUpInside:"), forControlEvents: .TouchUpInside)
-        self.videoPreviewViewControl.addTarget(self, action: Selector("videoTouchUpOutside:"), forControlEvents: .TouchUpOutside)
+        self.videoPreviewViewControl.addTarget(self, action: #selector(RecordVideoViewController.videoTouchDown(_:)), forControlEvents: .TouchDown)
+        self.videoPreviewViewControl.addTarget(self, action: #selector(RecordVideoViewController.videoTouchCancel(_:)), forControlEvents: .TouchCancel)
+        self.videoPreviewViewControl.addTarget(self, action: #selector(RecordVideoViewController.videoTouchUpInside(_:)), forControlEvents: .TouchUpInside)
+        self.videoPreviewViewControl.addTarget(self, action: #selector(RecordVideoViewController.videoTouchUpOutside(_:)), forControlEvents: .TouchUpOutside)
         
         
         let device = AVCaptureDevice.defaultDeviceWithMediaType(AVMediaTypeVideo)
@@ -94,7 +94,7 @@ class RecordVideoViewController: UIViewController {
     
     func videoTouchDown(event: UIControlEvents) {
         
-        elapsedTimer = NSTimer.scheduledTimerWithTimeInterval(kTimerInterval, target: self, selector: Selector("updateElapsedTime"), userInfo: nil, repeats: true)
+        elapsedTimer = NSTimer.scheduledTimerWithTimeInterval(kTimerInterval, target: self, selector: #selector(RecordVideoViewController.updateElapsedTime), userInfo: nil, repeats: true)
         
         if let newURL = self.generateVideoAbsoluteURLPath(NSUUID().UUIDString) {
             self.arrayOfVideos.append(newURL)

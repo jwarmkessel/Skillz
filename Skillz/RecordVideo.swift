@@ -21,8 +21,6 @@ class RecordVideo : NSObject {
     var device          : AVCaptureDevice?
     var audioDevice     : AVCaptureDevice?
     let documentsURL                                    = NSFileManager.defaultManager().URLsForDirectory(.DocumentDirectory, inDomains: .UserDomainMask)[0]
-    
-    
     var directoryName   : String?                       = NSUUID().UUIDString
     var arrayOfVideos   : [AnyObject]                   = [AnyObject]()
     var isRecording                                     = false

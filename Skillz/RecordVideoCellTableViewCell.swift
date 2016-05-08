@@ -21,10 +21,10 @@ class RecordVideoCellTableViewCell: UITableViewCell {
         self.contentView.userInteractionEnabled = true
         self.configureProgressView()
 
-        self.videoPreviewViewControl.addTarget(self, action: Selector("videoTouchDown:"), forControlEvents: .TouchDown)
-        self.videoPreviewViewControl.addTarget(self, action: Selector("videoTouchCancel:"), forControlEvents: .TouchCancel)
-        self.videoPreviewViewControl.addTarget(self, action: Selector("videoTouchUpInside:"), forControlEvents: .TouchUpInside)
-        self.videoPreviewViewControl.addTarget(self, action: Selector("videoTouchUpOutside:"), forControlEvents: .TouchUpOutside)
+        self.videoPreviewViewControl.addTarget(self, action: #selector(RecordVideoCellTableViewCell.videoTouchDown(_:)), forControlEvents: .TouchDown)
+        self.videoPreviewViewControl.addTarget(self, action: #selector(RecordVideoCellTableViewCell.videoTouchCancel(_:)), forControlEvents: .TouchCancel)
+        self.videoPreviewViewControl.addTarget(self, action: #selector(RecordVideoCellTableViewCell.videoTouchUpInside(_:)), forControlEvents: .TouchUpInside)
+        self.videoPreviewViewControl.addTarget(self, action: #selector(RecordVideoCellTableViewCell.videoTouchUpOutside(_:)), forControlEvents: .TouchUpOutside)
         
         
         let device = AVCaptureDevice.defaultDeviceWithMediaType(AVMediaTypeVideo)
@@ -86,7 +86,7 @@ class RecordVideoCellTableViewCell: UITableViewCell {
     
     func videoTouchDown(event: UIControlEvents) {
         
-        elapsedTimer = NSTimer.scheduledTimerWithTimeInterval(kTimerInterval, target: self, selector: Selector("updateElapsedTime"), userInfo: nil, repeats: true)
+        elapsedTimer = NSTimer.scheduledTimerWithTimeInterval(kTimerInterval, target: self, selector: #selector(RecordVideoCellTableViewCell.updateElapsedTime), userInfo: nil, repeats: true)
         
         fileName = NSUUID().UUIDString
         

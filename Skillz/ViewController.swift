@@ -22,6 +22,8 @@ extension Float {
 
 class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSource {
   
+    let feedPlayer : AVPlayer = AVPlayer()
+    
     let recordViewController : RecordViewController = RecordViewController()
     
     @IBOutlet weak var tableView: UITableView!
@@ -32,26 +34,26 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
     var tempVisibleCells : [UITableViewCell?]?
     
     //MARK: ScrollViewDelegate
-    func scrollViewDidScroll(scrollView: UIScrollView) {
-        
-        print(self.tableView.visibleCells.count)
-        if let videoCell : VideoCell? = self.tableView.visibleCells.first as? VideoCell {
-            
-            let cellHeight = videoCell?.contentView.frame.size.height
-            print(cellHeight)
-            
-            let tableViewOffsetIncludingHeader = self.tableView.contentOffset.y + 64.0
-            print(tableViewOffsetIncludingHeader)
-            
-            if (tableViewOffsetIncludingHeader % 457 == 0) {
-                videoCell?.player?.pause()
-            }
-        }
-    }
+//    func scrollViewDidScroll(scrollView: UIScrollView) {
+//        
+//        print(self.tableView.visibleCells.count)
+//        if let videoCell : VideoCell? = self.tableView.visibleCells.first as? VideoCell {
+//            
+//            let cellHeight = videoCell?.contentView.frame.size.height
+//            print(cellHeight)
+//            
+//            let tableViewOffsetIncludingHeader = self.tableView.contentOffset.y + 64.0
+//            print(tableViewOffsetIncludingHeader)
+//            
+//            if (tableViewOffsetIncludingHeader % 457 == 0) {
+//                videoCell?.player?.pause()
+//            }
+//        }
+//    }
     
-    func scrollViewWillBeginDragging(scrollView: UIScrollView) {
-        
-    }
+//    func scrollViewWillBeginDragging(scrollView: UIScrollView) {
+//        
+//    }
     
     //MARK: UIViewController
     
@@ -172,6 +174,30 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         
     }
     
+    func tableView(tableView: UITableView,
+                   didEndDisplayingCell cell: UITableViewCell,
+                                        forRowAtIndexPath indexPath: NSIndexPath) {
+        
+        if let videoCell : VideoCell = cell as? VideoCell {
+            if var player : AVPlayer? = videoCell.player {
+                player = nil
+                
+                if (player == nil) {
+                    //print("Player is niled")
+                }
+            }
+            
+            if let sublayers = videoCell.videoImageView.layer.sublayers {
+                for layer in sublayers {
+                    if layer.isKindOfClass(AVPlayerLayer) {
+                        print("Removing layer")
+                        layer.removeFromSuperlayer()
+                    }
+                }
+            }
+        }
+    }
+    
     func configureVideoCell(cell : VideoCell, indexPath : NSIndexPath) -> VideoCell {
         cell.temporaryText?.text = "Create video content"
         cell.selectionStyle = .None
@@ -189,8 +215,13 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
                 
                 let pathURL = NSURL.fileURLWithPath(videoPath)
                 
+            
+                //TODO hook up to retrieveCurrentPlayerItem(contentPath : String)
+                //cell.player = self.feedPlayer.replaceCurrentItemWithPlayerItem(<#T##item: AVPlayerItem?##AVPlayerItem?#>)
+                cell.player = AVPlayer(URL: pathURL)
+                
                 if (cell.player == nil) {
-                    cell.player = AVPlayer(URL: pathURL)
+                    
                     
                     if let avPlayer = cell.player {    
                         let playerLayer = AVPlayerLayer(player: avPlayer)
@@ -215,13 +246,38 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
                     }
                 }
                 else {
-                    cell.player?.seekToTime(kCMTimeZero)
+                    
+                    
+                    let playerLayer = AVPlayerLayer(player: cell.player)
+                    
+                    playerLayer.videoGravity = AVLayerVideoGravityResizeAspect
+                    playerLayer.frame = cell.videoImageView.bounds
+                    
+                    let half : CGFloat = 2.0
+                    
+                    cell.videoImageView.transform = CGAffineTransformMakeRotation(CGFloat(M_PI)/half);
+                    cell.videoImageView.layer.addSublayer(playerLayer)
+                    cell.setNeedsLayout()
+                    cell.setNeedsDisplay()
+                    
+                    NSNotificationCenter.defaultCenter().addObserverForName(AVPlayerItemDidPlayToEndTimeNotification, object: cell.player?.currentItem, queue: nil, usingBlock: { (NSNotification) -> Void in
+                        
+                        cell.player?.currentItem?.seekToTime(kCMTimeZero)
+                        cell.player?.play()
+                    })
+                    
+                    //cell.player?.seekToTime(kCMTimeZero)
                     cell.player?.play()
+                
                 }
             }
         }
         
         return cell
+    }
+    
+    func retrieveCurrentPlayerItem(contentPath : String) {
+        
     }
     
     //FIXME: THIS IS NOT BEING USED.
@@ -356,16 +412,9 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         
         return validCell;
     }
-    
-    func tableView(tableView: UITableView,
-        didEndDisplayingCell cell: UITableViewCell,
-        forRowAtIndexPath indexPath: NSIndexPath) {
-            
-            if let videoCell : VideoCell? = cell as? VideoCell {
-                videoCell?.player?.pause()
-            }
-    }
 }
+
+
 
 extension ViewController: CaptureVideoDelegate {
     

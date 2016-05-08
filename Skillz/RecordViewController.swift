@@ -83,7 +83,7 @@ class RecordViewController: UIViewController, RecordVideoDelegate {
             
             if(CGRectContainsPoint(self.videoPreviewViewControl.frame, position))
             {
-                model.elapsedTimer = NSTimer.scheduledTimerWithTimeInterval(model.kTimerInterval, target: self, selector: Selector("updateElapsedTime"), userInfo: nil, repeats: true)
+                model.elapsedTimer = NSTimer.scheduledTimerWithTimeInterval(model.kTimerInterval, target: self, selector: #selector(RecordViewController.updateElapsedTime), userInfo: nil, repeats: true)
                 
                 if let newURL = self.generateVideoAbsoluteURLPath(NSUUID().UUIDString) {
                     self.model.arrayOfVideos.append(newURL)
