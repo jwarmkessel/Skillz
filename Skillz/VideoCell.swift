@@ -10,9 +10,19 @@ import UIKit
 import AVKit
 import MediaPlayer
 
-class VideoCell: UITableViewCell {
+protocol VideoCellDelegate: class {
+    func tryLessonButtonHandlerTapped(videoCell : VideoCell)
+}
 
+class VideoCell: UITableViewCell {
+    weak var delegate:VideoCellDelegate?
     
+    @IBAction func tryLessonButtonHandler(sender: UIButton, forEvent event: UIEvent) {
+        self.delegate?.tryLessonButtonHandlerTapped(self)
+    }
+    
+    @IBOutlet weak var detailLabel: UILabel!
+    @IBOutlet weak var topLineDecoration: UIView!
     @IBOutlet weak var videoImageView: UIImageView!
     @IBOutlet weak var temporaryText: UILabel!
     var player : AVPlayer?

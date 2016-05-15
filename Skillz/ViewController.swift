@@ -20,7 +20,7 @@ extension Float {
     }
 }
 
-class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSource {
+class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, VideoCellDelegate {
   
     let feedPlayer : AVPlayer = AVPlayer()
     
@@ -32,6 +32,15 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
     let documentsURL = NSFileManager.defaultManager().URLsForDirectory(.DocumentDirectory, inDomains: .UserDomainMask)[0]
     var model : FeedModel?
     var tempVisibleCells : [UITableViewCell?]?
+    
+    //MARK: VideoCellDelegate
+    func tryLessonButtonHandlerTapped(videoCell: VideoCell) {
+        videoCell.player?.pause()
+        
+        let storyboard = UIStoryboard(name: "Main", bundle: nil)
+        let vc = storyboard.instantiateViewControllerWithIdentifier("recordViewController") as! RecordViewController
+        self.presentViewController(vc, animated: true, completion: nil)
+    }
     
     //MARK: ScrollViewDelegate
 //    func scrollViewDidScroll(scrollView: UIScrollView) {
@@ -80,9 +89,15 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         self.tableView.reloadData()
     }
     
+    override func preferredStatusBarStyle() -> UIStatusBarStyle {
+        return .LightContent
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
+        self.setNeedsStatusBarAppearanceUpdate()
         
+        self.navigationController?.navigationBarHidden = true
         self.model = FeedModel.init()
     }
     
@@ -110,6 +125,16 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
     }
     
     //MARK: UITableViewDelegate
+    
+    func tableView(tableView: UITableView, estimatedHeightForRowAtIndexPath indexPath: NSIndexPath) -> CGFloat {
+//        if isLandscapeOrientation() {
+//            return hasImageAtIndexPath(indexPath) ? 140.0 : 120.0
+//        } else {
+//            return hasImageAtIndexPath(indexPath) ? 235.0 : 155.0
+//        }
+        
+        return UITableViewAutomaticDimension
+    }
     
     func tableView(tableView: UITableView, willDisplayCell cell: UITableViewCell, forRowAtIndexPath indexPath: NSIndexPath) {
 
@@ -199,8 +224,14 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
     }
     
     func configureVideoCell(cell : VideoCell, indexPath : NSIndexPath) -> VideoCell {
+
+        cell.topLineDecoration.backgroundColor = indexPath.row != 0 ? UIColor.lightGrayColor() : cell.topLineDecoration.backgroundColor
+        cell.topLineDecoration.alpha = 0.8
         cell.temporaryText?.text = "Create video content"
         cell.selectionStyle = .None
+        cell.delegate = self
+        
+        cell.detailLabel.text = indexPath.row == 0 ? "Tap the button on the right." : ""
         
         var isDir = ObjCBool(false)
 
@@ -214,171 +245,67 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
             if NSFileManager.defaultManager().fileExistsAtPath(videoPath, isDirectory: &isDir) {
                 
                 let pathURL = NSURL.fileURLWithPath(videoPath)
-                
-            
+    
                 //TODO hook up to retrieveCurrentPlayerItem(contentPath : String)
                 //cell.player = self.feedPlayer.replaceCurrentItemWithPlayerItem(<#T##item: AVPlayerItem?##AVPlayerItem?#>)
                 cell.player = AVPlayer(URL: pathURL)
                 
-                if (cell.player == nil) {
-                    
-                    
-                    if let avPlayer = cell.player {    
-                        let playerLayer = AVPlayerLayer(player: avPlayer)
-                        
-                        playerLayer.videoGravity = AVLayerVideoGravityResizeAspect
-                        playerLayer.frame = cell.videoImageView.bounds
-                        
-                        let half : CGFloat = 2.0
-                        
-                        cell.videoImageView.transform = CGAffineTransformMakeRotation(CGFloat(M_PI)/half);
-                        cell.videoImageView.layer.addSublayer(playerLayer)
-                        cell.setNeedsLayout()
-                        cell.setNeedsDisplay()
-                        
-                        NSNotificationCenter.defaultCenter().addObserverForName(AVPlayerItemDidPlayToEndTimeNotification, object: cell.player?.currentItem, queue: nil, usingBlock: { (NSNotification) -> Void in
-                            
-                            cell.player?.currentItem?.seekToTime(kCMTimeZero)
-                            cell.player?.play()
-                        })
-                        
-                        avPlayer.play()
-                    }
-                }
-                else {
-                    
-                    
-                    let playerLayer = AVPlayerLayer(player: cell.player)
-                    
-                    playerLayer.videoGravity = AVLayerVideoGravityResizeAspect
-                    playerLayer.frame = cell.videoImageView.bounds
-                    
-                    let half : CGFloat = 2.0
-                    
-                    cell.videoImageView.transform = CGAffineTransformMakeRotation(CGFloat(M_PI)/half);
-                    cell.videoImageView.layer.addSublayer(playerLayer)
-                    cell.setNeedsLayout()
-                    cell.setNeedsDisplay()
-                    
-                    NSNotificationCenter.defaultCenter().addObserverForName(AVPlayerItemDidPlayToEndTimeNotification, object: cell.player?.currentItem, queue: nil, usingBlock: { (NSNotification) -> Void in
-                        
-                        cell.player?.currentItem?.seekToTime(kCMTimeZero)
-                        cell.player?.play()
-                    })
-                    
-                    //cell.player?.seekToTime(kCMTimeZero)
-                    cell.player?.play()
+                let playerLayer = AVPlayerLayer(player: cell.player)
+        
+                playerLayer.setAffineTransform(CGAffineTransformMakeRotation(CGFloat(M_PI)/2.0))
+                let height : CGFloat = CGRectGetHeight(cell.videoImageView.layer.frame)
+                let width : CGFloat = CGRectGetWidth(cell.videoImageView.layer.frame)
+                let rect : CGRect = CGRectMake(0.0, 0.0, width, height)
                 
-                }
+                playerLayer.frame = rect
+                
+                playerLayer.videoGravity = AVLayerVideoGravityResizeAspect
+                
+                cell.videoImageView.layer.addSublayer(playerLayer)
+
+                NSNotificationCenter.defaultCenter().addObserverForName(AVPlayerItemDidPlayToEndTimeNotification, object: cell.player?.currentItem, queue: nil, usingBlock: { (NSNotification) -> Void in
+                    
+                    cell.player?.currentItem?.seekToTime(kCMTimeZero)
+                    cell.player?.play()
+                })
+                
+                //cell.player?.seekToTime(kCMTimeZero)
+                cell.player?.play()
+                cell.player?.muted = true;
             }
         }
         
         return cell
     }
     
-    func retrieveCurrentPlayerItem(contentPath : String) {
-        
-    }
-    
-    //FIXME: THIS IS NOT BEING USED.
-    func videoCellInstructions(player: AVPlayerItem, asset: AVAsset) -> AVMutableVideoComposition? {
-        //See how we are creating AVMutableVideoCompositionInstruction object.This object will contain the array of our AVMutableVideoCompositionLayerInstruction objects.You set the duration of the layer.You should add the lenght equal to the lingth of the longer asset in terms of duration.
-        
-        
-        
-        let mainInstruction : AVMutableVideoCompositionInstruction = AVMutableVideoCompositionInstruction()
-        mainInstruction.timeRange = CMTimeRangeMake(kCMTimeZero, asset.duration)
-        
-        //We will be creating 2 AVMutableVideoCompositionLayerInstruction objects.Each for our 2 AVMutableCompositionTrack.here we are creating AVMutableVideoCompositionLayerInstruction for out first track.see how we make use of Affinetransform to move and scale our First Track.so it is displayed at the bottom of the screen in smaller size.(First track in the one that remains on top).
-        
-        
-        if let compTrack1 = asset.tracks.first as? AVMutableCompositionTrack {
-            let firstLayerInstruction : AVMutableVideoCompositionLayerInstruction = AVMutableVideoCompositionLayerInstruction.init(assetTrack: compTrack1)
+    func handsfreeTap(gesture: UITapGestureRecognizer) {
+        let indexPath = NSIndexPath(forRow: gesture.view!.tag, inSection: 0)
+        let cell : VideoCell = (self.tableView.cellForRowAtIndexPath(indexPath) as? VideoCell)!
 
-            var scale : CGAffineTransform = CGAffineTransformMakeScale(0.7,0.7)
-            var move : CGAffineTransform = CGAffineTransformMakeTranslation(230,230)
-            
-            firstLayerInstruction.setTransform(CGAffineTransformConcat(scale, move), atTime: kCMTimeZero)
-            
-            //Now we set the length of the firstTrack equal to the length of the firstAsset and add the firstAsset to out newly created track at kCMTimeZero so video plays from the start of the track.
-            do {
-                
-                try compTrack1.insertTimeRange(CMTimeRangeMake(kCMTimeZero, asset.duration), ofTrack:compTrack1.asset!.tracksWithMediaType(AVMediaTypeVideo).first!, atTime: kCMTimeZero)
-            } catch {
-                print("annoying")
-            }
-            
-            if let compTrack2 = asset.tracks.last as? AVMutableCompositionTrack {
-                
-                let secondLayerInstruction : AVMutableVideoCompositionLayerInstruction = AVMutableVideoCompositionLayerInstruction.init(assetTrack: compTrack1)
-                
-                scale = CGAffineTransformMakeScale(1.2,1.5)
-                move = CGAffineTransformMakeTranslation(0,0)
-                
-                secondLayerInstruction.setTransform(CGAffineTransformConcat(scale, move), atTime: kCMTimeZero)
-                
-                //Now we set the length of the firstTrack equal to the length of the firstAsset and add the firstAsset to out newly created track at kCMTimeZero so video plays from the start of the track.
-                do {
-                    
-                    try compTrack2.insertTimeRange(CMTimeRangeMake(kCMTimeZero, asset.duration), ofTrack:compTrack2.asset!.tracksWithMediaType(AVMediaTypeVideo).first!, atTime: kCMTimeZero)
-                } catch {
-                    print("annoying")
-                }
-            
-                //Now we add our 2 created AVMutableVideoCompositionLayerInstruction objects to our AVMutableVideoCompositionInstruction in form of an array.
-                mainInstruction.layerInstructions = [firstLayerInstruction, secondLayerInstruction]
-                
-                //Now we create AVMutableVideoComposition object.We can add mutiple AVMutableVideoCompositionInstruction to this object.We have only one AVMutableVideoCompositionInstruction object in our example.You can use multiple AVMutableVideoCompositionInstruction objects to add multiple layers of effects such as fade and transition but make sure that time ranges of the AVMutableVideoCompositionInstruction objects dont overlap.
-                let mainCompositionInst : AVMutableVideoComposition  = AVMutableVideoComposition()
-                
-                mainCompositionInst.instructions = [mainInstruction]
-                mainCompositionInst.frameDuration = CMTimeMake(1, 30)
-                mainCompositionInst.renderSize = CGSizeMake(640, 480)
-                
-                return mainCompositionInst
-                
-            }
+        if (cell.player?.rate == 0.0)
+        {
+            cell.player?.play()
+            cell.player?.muted = false;
         }
-        
-        return nil
+        else
+        {
+            cell.player?.pause()
+        }
     }
-    
+
     func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
         
-        let storyboard = UIStoryboard(name: "Main", bundle: nil)
-        let vc = storyboard.instantiateViewControllerWithIdentifier("recordViewController") as! RecordViewController
-        self.presentViewController(vc, animated: true, completion: nil)
+        let cell : VideoCell = (self.tableView.cellForRowAtIndexPath(indexPath) as? VideoCell)!
+        
+        if (cell.player?.rate == 0.0)
+        {
+            cell.player?.play()
+        }
+        else
+        {
+            cell.player?.pause()
+        }
     }
-
-    override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
-//        if (segue.identifier == "videoHomework") {
-//
-//            let row = self.tableView.indexPathForSelectedRow?.row
-//                
-//            if let model = self.model, let vid = model.videos, let _ : AnyObject? = vid[row!] {
-//                
-//                
-//                if let vidName : String = vid[row!] as? String {
-//                    
-//                    let videoPath = documentsURL.path! + "/" + vidName
-//                    
-//                    var isDir = ObjCBool(false)
-//                    
-//                    if NSFileManager.defaultManager().fileExistsAtPath(videoPath, isDirectory: &isDir) {
-//                        
-//                        let pathURL = NSURL.fileURLWithPath(videoPath)
-//
-//                        let watchAndSpeakModel : WatchAndSpeakModel = WatchAndSpeakModel.init(previewURL: pathURL)
-//                        
-//                        let watchAndSpeakController : WatchAndSpeakController = segue.destinationViewController as! WatchAndSpeakController
-//                        watchAndSpeakController.model = watchAndSpeakModel
-//                    }
-//                }
-//            }
-//        }
-    }
-
-
     
     func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell
     {
@@ -414,8 +341,6 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
     }
 }
 
-
-
 extension ViewController: CaptureVideoDelegate {
     
     func didCaptureVideo(recordViewController: RecordVideoViewController) {
@@ -427,11 +352,3 @@ extension ViewController: CaptureVideoDelegate {
         }
     }
 }
-
-//This works below! Use this for when user taps the video.
-//                                let player = AVPlayer(URL: pathURL)
-//                                let playerViewController = AVPlayerViewController()
-//                                playerViewController.player = player
-//                                self.presentViewController(playerViewController, animated: true) {
-//                                    playerViewController.player!.play()
-//                                }

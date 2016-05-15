@@ -30,7 +30,7 @@ class RecordVideo : NSObject {
     let captureFramesPerSecond                          = 30.0
     var elapsedProgressBarMovement : Double             = 0
     var kTimerInterval : NSTimeInterval                 = 0.02
-
+    var previousCameraInput : AVCaptureInput?
     var completedVideoURL : NSURL?
     
     override init() {

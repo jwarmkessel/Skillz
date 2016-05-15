@@ -10,6 +10,11 @@ import Foundation
 import UIKit
 import AVFoundation
 
+enum CameraType {
+    case Front 
+    case Back
+}
+
 class RecordViewController: UIViewController, RecordVideoDelegate {
     var model           : RecordVideo                   = RecordVideo()
     var previewLayer    : AVCaptureVideoPreviewLayer?
@@ -17,11 +22,15 @@ class RecordViewController: UIViewController, RecordVideoDelegate {
     @IBOutlet weak var previewView: UIView!
     @IBOutlet weak var progressView: UIProgressView!
     @IBOutlet weak var videoPreviewViewControl: UIImageView!
+    @IBOutlet weak var flipCameraButton: UIButton!
     
     @IBAction func cancelButtonHandler(sender: AnyObject) {
         self.dismissViewControllerAnimated(true, completion: nil)
     }
     
+    @IBAction func flipCameraButtonHandler(sender: AnyObject) {
+        self.reloadCamera()
+    }
     func resetElapsedTime() {
         model.elapsedProgressBarMovement = 0
         model.elapsedTime = 0
@@ -41,6 +50,7 @@ class RecordViewController: UIViewController, RecordVideoDelegate {
     }
     
     @IBAction func saveButtonHandler(sender: AnyObject) {
+
         self.stopVideoRecording()
         model.mixCompositionMerge()
     }
@@ -214,4 +224,81 @@ class RecordViewController: UIViewController, RecordVideoDelegate {
         
         model.session?.startRunning()
     }
-}
+    
+    var camera = CameraType.Back
+    
+    func reloadCamera() {
+        //Change camera source
+        if let session = model.session
+        {
+            //Indicate that some changes will be made to the session
+            session.beginConfiguration()
+            
+            //Remove existing input
+            if let currentCameraInput : AVCaptureInput? = self.frontOrBackCameraDeviceFromInputs(session)
+            {
+                session.removeInput(currentCameraInput)
+                
+                //Get new input
+                var newCamera : AVCaptureDevice? = nil
+                
+                if let deviceInput : AVCaptureDeviceInput = currentCameraInput as? AVCaptureDeviceInput
+                {
+                    
+                    if (deviceInput.device.position == .Back)
+                    {
+                        newCamera = self.cameraWithPosition(.Front)
+                    }
+                    else if (deviceInput.device.position == .Front)
+                    {
+                        newCamera = self.cameraWithPosition(.Back)
+                    }
+                    
+                    var newVideoInput : AVCaptureDeviceInput? = nil
+                    
+                    do {
+                        newVideoInput = try AVCaptureDeviceInput(device: newCamera)
+                    } catch _ {
+                        //Error handling, if needed  
+                    }
+                    
+                    session.addInput(newVideoInput)
+                    
+                    session.commitConfiguration()
+                }
+            }
+        }
+    }
+
+    func frontOrBackCameraDeviceFromInputs(session : AVCaptureSession) -> AVCaptureDeviceInput?
+    {
+        for (index, input) in session.inputs.enumerate() {
+            print("Index and Device \(index): \(input)")
+           
+            if let device : AVCaptureDevice = input.device
+            {
+                if (device.localizedName == "Back Camera" || device.localizedName == "Front Camera")
+                {
+                    return input as? AVCaptureDeviceInput
+                }
+            }
+        }
+        
+        return nil
+    }
+    
+    func cameraWithPosition(position : AVCaptureDevicePosition) -> AVCaptureDevice?
+    {
+        let devices : NSArray = AVCaptureDevice.devicesWithMediaType(AVMediaTypeVideo)
+        
+        for (index, device) in devices.enumerate() {
+            print("Index and Device \(index): \(device)")
+            if (device.position == position)
+            {
+                return device as? AVCaptureDevice
+            }
+        }
+        
+        return nil
+    }
+}//Ending Bracket

@@ -18,7 +18,11 @@ class PreviewVideoController : UIViewController{
     @IBOutlet weak var previewVideoView: UIImageView!
 
     @IBAction func doneButtonHandler(sender: AnyObject) {
-        self.navigationController?.popToRootViewControllerAnimated(true);
+        //This can go back!
+        //self.dismissViewControllerAnimated(true, completion: nil)
+        
+        let mapViewControllerObj = self.storyboard?.instantiateViewControllerWithIdentifier("videoFeed") as? ViewController
+        self.navigationController?.pushViewController(mapViewControllerObj!, animated: true)
     }
     override func viewDidLoad() {
         super.viewDidLoad()
