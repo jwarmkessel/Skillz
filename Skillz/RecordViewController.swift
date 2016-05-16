@@ -56,8 +56,12 @@ class RecordViewController: UIViewController, RecordVideoDelegate {
     }
     
     func didFinishTask(sender: RecordVideo)
-    {        
-        self.performSegueWithIdentifier("previewVideo", sender: self)
+    {
+        dispatch_async(dispatch_get_main_queue()) {
+            [unowned self] in
+            self.performSegueWithIdentifier("previewRecordedVideo", sender: self)
+        }
+        
     }
     
     func createPreviewLayerComponents() {
@@ -68,7 +72,11 @@ class RecordViewController: UIViewController, RecordVideoDelegate {
         if let layer = self.previewLayer {
             layer.videoGravity = AVLayerVideoGravityResizeAspectFill
             layer.frame = videoPreviewViewControl.frame
-            layer.connection.videoOrientation = .Portrait
+            
+            if let connector = layer.connection
+            {
+                connector.videoOrientation = .Portrait
+            }
         }
         
         UIDevice.currentDevice().endGeneratingDeviceOrientationNotifications()
@@ -105,7 +113,7 @@ class RecordViewController: UIViewController, RecordVideoDelegate {
     
     override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
 
-        if (segue.identifier == "previewVideo") {
+        if (segue.identifier == "previewRecordedVideo") {
             
             if let completedVideoURL = model.completedVideoURL {
                 let previewVideo : PreviewVideo = PreviewVideo.init(url: completedVideoURL)
@@ -203,26 +211,32 @@ class RecordViewController: UIViewController, RecordVideoDelegate {
     
         var videoConnection : AVCaptureConnection?
         
-        for connection in (model.movieFileOutput?.connections)! {
-            for port in connection.inputPorts! {
-                if port.mediaType == AVMediaTypeVideo {
-                    videoConnection = connection as? AVCaptureConnection
-                    break
+        if let fileOutput : AVCaptureMovieFileOutput = model.movieFileOutput
+        {
+            if let connections = fileOutput.connections
+            {
+                for connection in connections {
+                    for port in connection.inputPorts! {
+                        if port.mediaType == AVMediaTypeVideo {
+                            videoConnection = connection as? AVCaptureConnection
+                            break
+                        }
+                    }
+                    
+                    if videoConnection != nil {
+                        break
+                    }
                 }
-            }
-            
-            if videoConnection != nil {
-                break
+                
+                videoConnection?.videoOrientation = .Portrait
+                
+                if (model.session?.canSetSessionPreset(AVCaptureSessionPreset640x480) != nil) {
+                    model.session?.sessionPreset = AVCaptureSessionPreset640x480
+                }
+                
+                model.session?.startRunning()
             }
         }
-        
-        videoConnection?.videoOrientation = .Portrait
-        
-        if (model.session?.canSetSessionPreset(AVCaptureSessionPreset640x480) != nil) {
-            model.session?.sessionPreset = AVCaptureSessionPreset640x480
-        }
-        
-        model.session?.startRunning()
     }
     
     var camera = CameraType.Back

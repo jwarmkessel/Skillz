@@ -18,7 +18,7 @@
                         <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="435" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="21p-MV-ZFG">
+                            <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="none" rowHeight="435" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="21p-MV-ZFG">
                                 <rect key="frame" x="0.0" y="0.0" width="600" height="551"/>
                                 <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                                 <prototypes>
@@ -26,7 +26,7 @@
                                         <rect key="frame" x="0.0" y="28" width="600" height="400"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="f7x-VT-80z" id="VXz-gz-dv5">
-                                            <rect key="frame" x="0.0" y="0.0" width="600" height="399.5"/>
+                                            <rect key="frame" x="0.0" y="0.0" width="600" height="400"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
                                                 <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="u95-t6-jKm">
@@ -244,12 +244,12 @@
                         <outlet property="previewView" destination="41g-tT-vi0" id="6Km-Md-iGx"/>
                         <outlet property="progressView" destination="c3b-vO-xde" id="ZY2-8E-OAd"/>
                         <outlet property="videoPreviewViewControl" destination="Kms-tU-Krl" id="JFv-n2-K5I"/>
-                        <segue destination="7Fb-dn-R6c" kind="show" identifier="previewVideo" id="kCM-0a-S7C"/>
+                        <segue destination="7Fb-dn-R6c" kind="show" identifier="previewRecordedVideo" id="xx8-oI-lhZ"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="XSJ-gx-4bV" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="3623" y="-2500"/>
+            <point key="canvasLocation" x="4620" y="-2500"/>
         </scene>
         <!--Preview Video Controller-->
         <scene sceneID="9bO-U2-Gtx">
@@ -264,10 +264,10 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="Yuy-Pi-gso">
-                                <rect key="frame" x="0.0" y="58" width="600" height="542"/>
+                                <rect key="frame" x="0.0" y="50" width="600" height="550"/>
                             </imageView>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="phk-5a-who">
-                                <rect key="frame" x="489" y="20" width="46" height="30"/>
+                                <rect key="frame" x="524" y="20" width="46" height="30"/>
                                 <constraints>
                                     <constraint firstAttribute="width" constant="46" id="r22-6n-0AN"/>
                                     <constraint firstAttribute="height" constant="30" id="xoS-dA-dNW"/>
@@ -283,11 +283,13 @@
                             <constraint firstItem="KXP-Nj-kx4" firstAttribute="top" secondItem="Yuy-Pi-gso" secondAttribute="bottom" id="HqH-bE-tOD"/>
                             <constraint firstItem="Yuy-Pi-gso" firstAttribute="leading" secondItem="onW-NW-fYb" secondAttribute="leading" id="Kwu-0e-OiJ"/>
                             <constraint firstItem="phk-5a-who" firstAttribute="top" secondItem="AIT-Hm-Nr8" secondAttribute="bottom" id="SD1-5S-NMt"/>
-                            <constraint firstAttribute="trailingMargin" secondItem="phk-5a-who" secondAttribute="trailing" constant="45" id="oU2-7A-u1G"/>
+                            <constraint firstAttribute="trailingMargin" secondItem="phk-5a-who" secondAttribute="trailing" constant="10" id="oU2-7A-u1G"/>
                             <constraint firstAttribute="trailing" secondItem="Yuy-Pi-gso" secondAttribute="trailing" id="xsO-gO-Y4W"/>
-                            <constraint firstItem="Yuy-Pi-gso" firstAttribute="top" secondItem="phk-5a-who" secondAttribute="bottom" constant="8" id="z3E-Bg-eUS"/>
+                            <constraint firstItem="Yuy-Pi-gso" firstAttribute="top" secondItem="phk-5a-who" secondAttribute="bottom" id="z3E-Bg-eUS"/>
                         </constraints>
                     </view>
+                    <extendedEdge key="edgesForExtendedLayout" bottom="YES"/>
+                    <nil key="simulatedTopBarMetrics"/>
                     <connections>
                         <outlet property="doneButton" destination="phk-5a-who" id="BfH-xf-v74"/>
                         <outlet property="previewVideoView" destination="Yuy-Pi-gso" id="s7c-x5-dgk"/>
@@ -295,7 +297,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="zZI-4e-OYK" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="2766" y="-2470"/>
+            <point key="canvasLocation" x="5298" y="-2500"/>
         </scene>
         <!--Camera-->
         <scene sceneID="OHe-O7-cDX">
@@ -425,6 +427,25 @@
                 <placeholder placeholderIdentifier="IBFirstResponder" id="xyH-P5-76J" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="202" y="-1386"/>
+        </scene>
+        <!--Navigation Controller-->
+        <scene sceneID="MBf-I8-O7Y">
+            <objects>
+                <navigationController storyboardIdentifier="RecordVideoNavigationController" automaticallyAdjustsScrollViewInsets="NO" navigationBarHidden="YES" id="irE-IL-fdn" sceneMemberID="viewController">
+                    <toolbarItems/>
+                    <nil key="simulatedTopBarMetrics"/>
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" id="2tn-rg-7pE">
+                        <rect key="frame" x="0.0" y="0.0" width="320" height="44"/>
+                        <autoresizingMask key="autoresizingMask"/>
+                    </navigationBar>
+                    <nil name="viewControllers"/>
+                    <connections>
+                        <segue destination="bGH-Uo-AyG" kind="relationship" relationship="rootViewController" id="wyp-m1-htg"/>
+                    </connections>
+                </navigationController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="5o1-Em-Tjh" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="3623" y="-2500"/>
         </scene>
     </scenes>
     <resources>

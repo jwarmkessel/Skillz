@@ -34,6 +34,17 @@ class FeedModel: NSObject {
     
     func updateVideos() {
         self.videos = self.pathsForAllVideos()
+        
+        //DEBUG: 
+        if (self.videos?.count < 1)
+        {
+            let path = NSBundle.mainBundle().pathForResource("InstructorDavid", ofType: "mp4")
+            
+            if let stringPath = path
+            {
+                self.videos?.append(stringPath)
+            }
+        }
     }
     func pathsForAllImages () -> [AnyObject?]? {
         let url = NSFileManager.defaultManager().URLsForDirectory(.DocumentDirectory, inDomains: .UserDomainMask)[0]
