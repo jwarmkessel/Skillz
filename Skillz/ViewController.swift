@@ -11,14 +11,16 @@ import MediaPlayer
 import AVKit
 
 class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, VideoCellDelegate {
+    //MARK: Outlets and Actions
     @IBOutlet weak var tableView: UITableView!
+    
  
     //MARK: properties
+    var model : FeedModel?
     let kEstimatedRowHeight : CGFloat = 600.0
     let documentsURL = NSFileManager.defaultManager().URLsForDirectory(.DocumentDirectory, inDomains: .UserDomainMask)[0]
-    var model : FeedModel?
-    var tempVisibleCells : [UITableViewCell?]?
     
+
     //MARK: UIViewController
     override func viewWillDisappear(animated: Bool) {
         super.viewWillDisappear(animated)
@@ -63,35 +65,6 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
     
     func tableView(tableView: UITableView, estimatedHeightForRowAtIndexPath indexPath: NSIndexPath) -> CGFloat {
         return UITableViewAutomaticDimension
-    }
-    
-    func tableView(tableView: UITableView, willDisplayCell cell: UITableViewCell, forRowAtIndexPath indexPath: NSIndexPath) {
-
-        self.stopNonVisibleVideoCellMediaSession(tableView, willDisplayCell: cell, indexPath: indexPath)
-    }
-    
-    func stopNonVisibleVideoCellMediaSession(tableView: UITableView, willDisplayCell cell: UITableViewCell, indexPath: NSIndexPath) {
-        guard let visibleCells = self.tempVisibleCells else {
-            self.tempVisibleCells = self.tableView.visibleCells
-            return
-        }
-        
-        for (_, element) in visibleCells.enumerate() {
-            if let visible : [VideoCell]? = self.tableView.visibleCells as? [VideoCell], let visibleCellsNonOptional = visible {
-                for videoCell: VideoCell in visibleCellsNonOptional {
-                    
-                    var found : Bool = false
-                    
-                    if (videoCell == element) {
-                        found = true
-                    }
-                    
-                    if (!found) {
-                        //Take the videoCell and stop it.
-                    }
-                }
-            }
-        }
     }
     
     func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {

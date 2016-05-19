@@ -377,7 +377,7 @@
                             <constraint firstItem="u0H-5F-stx" firstAttribute="top" secondItem="8pn-MF-EEs" secondAttribute="bottom" constant="8" id="rLf-D7-H8O"/>
                         </constraints>
                     </view>
-                    <tabBarItem key="tabBarItem" title="Camera" image="ButtonRecordVideo" id="U4r-uh-DUi"/>
+                    <tabBarItem key="tabBarItem" title="Camera" id="U4r-uh-DUi"/>
                     <connections>
                         <outlet property="dismissControllerButton" destination="os6-YZ-Tju" id="NkN-Ls-BEO"/>
                         <outlet property="elapsedTimeLabel" destination="u0H-5F-stx" id="6TI-eU-nMc"/>
@@ -413,7 +413,7 @@
         <!--Tab Bar Controller-->
         <scene sceneID="PWv-hC-6jk">
             <objects>
-                <tabBarController automaticallyAdjustsScrollViewInsets="NO" id="esh-tu-w1b" sceneMemberID="viewController">
+                <tabBarController storyboardIdentifier="MainTabBarController" automaticallyAdjustsScrollViewInsets="NO" id="esh-tu-w1b" sceneMemberID="viewController">
                     <toolbarItems/>
                     <tabBar key="tabBar" contentMode="scaleToFill" id="1J0-Fc-3tP">
                         <autoresizingMask key="autoresizingMask"/>
@@ -449,7 +449,6 @@
         </scene>
     </scenes>
     <resources>
-        <image name="ButtonRecordVideo" width="32" height="32"/>
         <image name="Justin" width="316" height="306"/>
     </resources>
 </document>

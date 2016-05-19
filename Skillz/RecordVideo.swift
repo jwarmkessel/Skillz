@@ -122,6 +122,8 @@ class RecordVideo : NSObject {
         if (self.session?.canAddOutput(self.movieFileOutput) != nil) {
             self.session?.addOutput(self.movieFileOutput)
         }
+        
+        
     }
     
     func mixCompositionMerge() {
