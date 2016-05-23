@@ -149,7 +149,7 @@ class RecordVideoCellTableViewCell: UITableViewCell {
         
         /* Capture Video Preview Layer */
         previewLayer = AVCaptureVideoPreviewLayer (session: session)
-        previewLayer?.videoGravity = AVLayerVideoGravityResizeAspectFill
+        previewLayer?.videoGravity = AVLayerVideoGravityResizeAspect
         previewLayer?.frame = CGRectMake(0, 50, videoPreviewViewControl.frame.size.width, videoPreviewViewControl.frame.size.height - 50)
         
         UIDevice.currentDevice().beginGeneratingDeviceOrientationNotifications()

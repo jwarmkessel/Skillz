@@ -40,9 +40,7 @@ class OnboardingVideoInstructionViewController: UIViewController {
                 self.playerLayer = AVPlayerLayer(player: self.player)
     
                 if let playerLayer = self.playerLayer
-                {
-//                    playerLayer.setAffineTransform(CGAffineTransformMakeRotation(CGFloat(M_PI)/2.0))
-    
+                {    
                     let height : CGFloat = CGRectGetHeight(self.videoImageView.layer.frame)
                     let width : CGFloat = CGRectGetWidth(self.videoImageView.layer.frame)
                     let rect : CGRect = CGRectMake(0.0, 0.0, height, width + 20.0)
@@ -53,9 +51,9 @@ class OnboardingVideoInstructionViewController: UIViewController {
     
                     self.videoImageView.layer.addSublayer(playerLayer)
                     
-                    if let player = self.player {
-                        player.play()
-                    }
+//                    if let player = self.player {
+//                        player.play()
+//                    }
                 }
             }
         }

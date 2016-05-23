@@ -61,7 +61,6 @@ class RecordViewController: UIViewController, RecordVideoDelegate {
             [unowned self] in
             self.performSegueWithIdentifier("previewRecordedVideo", sender: self)
         }
-        
     }
     
     func createPreviewLayerComponents() {
@@ -71,7 +70,11 @@ class RecordViewController: UIViewController, RecordVideoDelegate {
 
         if let layer = self.previewLayer {
             layer.videoGravity = AVLayerVideoGravityResizeAspectFill
-            layer.frame = videoPreviewViewControl.frame
+            
+            layer.frame = self.videoPreviewViewControl.layer.frame
+            
+            self.view.layoutIfNeeded()
+            self.view.setNeedsLayout()
             
             if let connector = layer.connection
             {
@@ -197,6 +200,17 @@ class RecordViewController: UIViewController, RecordVideoDelegate {
         
         NSNotificationCenter.defaultCenter().removeObserver(self)
     }
+    
+    override func viewDidLayoutSubviews()
+    {
+        super.viewDidLayoutSubviews()
+        
+//        CGRect bounds=view.layer.bounds;
+//        avLayer.videoGravity = AVLayerVideoGravityResizeAspectFill;
+//        avLayer.bounds=bounds;
+//        avLayer.position=CGPointMake(CGRectGetMidX(bounds), CGRectGetMidY(bounds));
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -209,34 +223,8 @@ class RecordViewController: UIViewController, RecordVideoDelegate {
         self.configureProgressView()
         self.createPreviewLayerComponents()
     
-        var videoConnection : AVCaptureConnection?
-        
-        if let fileOutput : AVCaptureMovieFileOutput = model.movieFileOutput
-        {
-            if let connections = fileOutput.connections
-            {
-                for connection in connections {
-                    for port in connection.inputPorts! {
-                        if port.mediaType == AVMediaTypeVideo {
-                            videoConnection = connection as? AVCaptureConnection
-                            break
-                        }
-                    }
-                    
-                    if videoConnection != nil {
-                        break
-                    }
-                }
-                
-                videoConnection?.videoOrientation = .Portrait
-                
-                if (model.session?.canSetSessionPreset(AVCaptureSessionPreset640x480) != nil) {
-                    model.session?.sessionPreset = AVCaptureSessionPreset640x480
-                }
-                
-                model.session?.startRunning()
-            }
-        }
+        //Super important
+        model.setupConnection()
     }
     
     var camera = CameraType.Back

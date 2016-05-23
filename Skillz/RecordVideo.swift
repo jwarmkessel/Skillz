@@ -20,6 +20,7 @@ class RecordVideo : NSObject {
     var dataOutput      : AVCaptureVideoDataOutput?
     var device          : AVCaptureDevice?
     var audioDevice     : AVCaptureDevice?
+    var videoConnection : AVCaptureConnection?
     let documentsURL                                    = NSFileManager.defaultManager().URLsForDirectory(.DocumentDirectory, inDomains: .UserDomainMask)[0]
     var directoryName   : String?                       = NSUUID().UUIDString
     var arrayOfVideos   : [AnyObject]                   = [AnyObject]()
@@ -32,6 +33,11 @@ class RecordVideo : NSObject {
     var kTimerInterval : NSTimeInterval                 = 0.02
     var previousCameraInput : AVCaptureInput?
     var completedVideoURL : NSURL?
+    
+    
+    func setupConnection() {        
+       self.session?.startRunning()
+    }
     
     override init() {
         super.init()
@@ -68,7 +74,20 @@ class RecordVideo : NSObject {
     
     func createSession() {
         session = AVCaptureSession()
-        session?.sessionPreset = AVCaptureSessionPresetHigh
+        session?.sessionPreset = AVCaptureSessionPresetMedium
+        
+        if ((session?.canSetSessionPreset(AVCaptureSessionPreset640x480)) == true)
+        {
+            session?.beginConfiguration()
+            
+            session?.sessionPreset = AVCaptureSessionPreset640x480;
+            
+            session?.commitConfiguration()
+        }
+        else
+        {
+            //Failure case.
+        }
     }
     
     func createSessionInput() {
@@ -91,6 +110,7 @@ class RecordVideo : NSObject {
         if let output = self.dataOutput {
             output.videoSettings = [kCVPixelBufferPixelFormatTypeKey : Int(kCVPixelFormatType_32BGRA)]
             output.setSampleBufferDelegate(self, queue: queue)
+            
             session?.addOutput(output)
         }
     }
@@ -114,6 +134,39 @@ class RecordVideo : NSObject {
     func createMovieFileOutput() {
         self.movieFileOutput = AVCaptureMovieFileOutput()
 
+        if let fileOutput : AVCaptureMovieFileOutput = self.movieFileOutput
+        {
+            if let connections = fileOutput.connections
+            {
+                for connection in connections {
+                    for port in connection.inputPorts! {
+                        if port.mediaType == AVMediaTypeVideo {
+                            self.videoConnection = connection as? AVCaptureConnection
+                            self.videoConnection?.videoOrientation = .Portrait
+                            
+                            
+                            
+                            break
+                        }
+                    }
+                    
+                    if self.videoConnection != nil {
+                        
+                        fileOutput.setRecordsVideoOrientationAndMirroringChanges(true, asMetadataTrackForConnection: self.videoConnection)
+                        break
+                    }
+                }
+                
+                self.videoConnection?.videoOrientation = .Portrait
+                
+                
+                if (self.session?.canSetSessionPreset(AVCaptureSessionPreset640x480) != nil) {
+                    self.session?.sessionPreset = AVCaptureSessionPreset640x480
+                }
+            }
+        }
+
+        
         let maxDuration = CMTimeMakeWithSeconds(kMaxSecondsForVideo, Int32(captureFramesPerSecond))
         
         self.movieFileOutput?.maxRecordedDuration = maxDuration
@@ -130,6 +183,7 @@ class RecordVideo : NSObject {
         if let videos = self.arrayOfVideos as? [NSURL] {
             
             let mixcomposition : AVMutableComposition = AVMutableComposition()
+            let videoComposition : AVMutableVideoComposition = AVMutableVideoComposition()
             
             var current : CMTime = kCMTimeZero
             
@@ -141,6 +195,21 @@ class RecordVideo : NSObject {
                     
                     try mixcomposition.insertTimeRange(CMTimeRangeMake(kCMTimeZero, asset.duration), ofAsset: asset, atTime: current)
                     
+                    let assetVideoTrack : AVAssetTrack? = asset.tracksWithMediaType(AVMediaTypeVideo).first
+                    let compositionAssetTrack : AVMutableCompositionTrack? = mixcomposition.tracksWithMediaType(AVMediaTypeVideo).first
+                    
+                    if let assetTrack = assetVideoTrack, let compTrack = compositionAssetTrack
+                    {
+                        
+                        
+                        if let layerInstruction : AVMutableVideoCompositionInstruction = self.createAssetCompositionInstruction(asset, videoComposition: videoComposition, current: current)
+                        {
+                            videoComposition.instructions.append(layerInstruction)
+                        }
+                        
+                        compTrack.preferredTransform = assetTrack.preferredTransform
+                    }
+                
                 } catch {
                     
                     //FIXME: If there's an issue we may have to reprocess OR alert the user to the problem and how to solve (if can).
@@ -150,35 +219,162 @@ class RecordVideo : NSObject {
                 current = CMTimeAdd(current, asset.duration);
             }
             
-            let exporter = AVAssetExportSession(asset: mixcomposition, presetName: AVAssetExportPresetHighestQuality)
-            
+            videoComposition.renderSize = CGSizeMake(480.0, 480.0)
+            videoComposition.frameDuration = CMTimeMake(1, 30);
             let newFileName = NSUUID().UUIDString
-            
-            if let exporter = exporter, let completeMovieURL = self.completedRecordingURLPath(newFileName){
-                
-                exporter.outputURL = completeMovieURL
-                exporter.outputFileType = AVFileTypeMPEG4 //AVFileTypeQuickTimeMovie
-                
-                exporter.exportAsynchronouslyWithCompletionHandler({
-                    
-                    [unowned self] in
-                    
-                    switch exporter.status {
-                    case  AVAssetExportSessionStatus.Failed:
-                        print("failed \(exporter.error)")
-                    case AVAssetExportSessionStatus.Cancelled:
-                        print("cancelled \(exporter.error)")
-                    default:
-                        
-                        self.completedVideoURL = completeMovieURL;
-                        
-                        self.delegate?.didFinishTask(self)
-                    }
-                })
-            }
+
+            self.createExporterAndExport(mixcomposition, videoComposition: videoComposition, completeMovieURL: self.completedRecordingURLPath(newFileName)!)
         }
     }
-
+    
+    func createAssetCompositionInstruction(asset : AVAsset, videoComposition : AVMutableVideoComposition, current : CMTime) -> AVMutableVideoCompositionInstruction?
+    {
+        let assetVideoTrack : AVAssetTrack? = asset.tracksWithMediaType(AVMediaTypeVideo).first
+        let instruction : AVMutableVideoCompositionInstruction =  AVMutableVideoCompositionInstruction()
+        instruction.timeRange = CMTimeRangeMake(current, asset.duration)
+        
+        if let assetTrack = assetVideoTrack
+        {
+            let layerInstruction : AVMutableVideoCompositionLayerInstruction = AVMutableVideoCompositionLayerInstruction(assetTrack: assetTrack)
+            let squareTransform : CGAffineTransform = CGAffineTransformMakeTranslation(assetTrack.naturalSize.height, 0);
+            let finalTransform : CGAffineTransform = CGAffineTransformRotate(squareTransform, CGFloat(M_PI_2));
+            layerInstruction.setTransform(finalTransform, atTime: current)
+            instruction.layerInstructions.append(layerInstruction)
+            
+            return instruction
+        }
+        
+        return nil
+    }
+    
+    func createExporterAndExport(mixcomposition : AVMutableComposition, videoComposition : AVMutableVideoComposition, completeMovieURL : NSURL)
+    {
+        let exporter : AVAssetExportSession? = AVAssetExportSession(asset: mixcomposition, presetName: AVAssetExportPresetMediumQuality)
+    
+        if let exporter = exporter
+        {
+            exporter.videoComposition = videoComposition
+            exporter.outputURL = completeMovieURL
+            exporter.outputFileType = AVFileTypeMPEG4 //AVFileTypeQuickTimeMovie
+            exporter.exportAsynchronouslyWithCompletionHandler({
+                
+                [unowned self] in
+                
+                switch exporter.status {
+                case  AVAssetExportSessionStatus.Failed:
+                    print("failed \(exporter.error)")
+                case AVAssetExportSessionStatus.Cancelled:
+                    print("cancelled \(exporter.error)")
+                default:
+                    self.completedVideoURL = completeMovieURL;
+                    self.delegate?.didFinishTask(self)
+                }
+            })
+        }
+    }
+    
+//    func transformVideoToSquare(mixComposition : AVMutableComposition) ->AVMutableVideoComposition?
+//    {
+//        
+//        let videoComposition : AVMutableVideoComposition = AVMutableVideoComposition()
+//        
+//        videoComposition.frameDuration = mixComposition.duration
+//        
+//        let compTrackArray : [AVMutableCompositionTrack] = mixComposition.tracksWithMediaType(AVMediaTypeVideo)
+//        
+//        for assetTrack : AVMutableCompositionTrack in compTrackArray {
+//            videoComposition.renderSize = CGSizeMake(assetTrack.naturalSize.height, assetTrack.naturalSize.height)
+//            
+//            let instruction : AVMutableVideoCompositionInstruction =  AVMutableVideoCompositionInstruction()
+//            
+//            //FIXME: Mixcompositoin duration could be totally wrong
+//            instruction.timeRange = CMTimeRangeMake(kCMTimeZero, mixComposition.duration)
+//            
+//            let layerInstruction : AVMutableVideoCompositionLayerInstruction = AVMutableVideoCompositionLayerInstruction(assetTrack: assetTrack)
+//            let squareTransform : CGAffineTransform = CGAffineTransformMakeTranslation(assetTrack.naturalSize.height, 0);
+//            
+//            layerInstruction.setTransform(squareTransform, atTime: kCMTimeZero)
+//            instruction.layerInstructions.append(layerInstruction)
+//            videoComposition.instructions.append(instruction)
+//            
+//            
+//        }
+//        
+//        
+//    }
+    
+//    func transformVideoToSquare(asset : AVAsset) ->AVMutableVideoComposition?
+//    {
+//        
+//        let clipVideoTrack = AVURLAsset.init(URL: url)
+//        
+//        let videoComposition : AVMutableVideoComposition = AVMutableVideoComposition()
+//        
+//        videoComposition.frameDuration = clipVideoTrack.duration
+//
+//        let assetTrack : AVAssetTrack? = clipVideoTrack.tracksWithMediaType(AVMediaTypeVideo).first
+//        
+//        if let assetTrack = assetTrack
+//        {
+//            videoComposition.renderSize = CGSizeMake(assetTrack.naturalSize.height, assetTrack.naturalSize.height)
+//            
+//            let instruction : AVMutableVideoCompositionInstruction =  AVMutableVideoCompositionInstruction()
+//            
+//            instruction.timeRange = CMTimeRangeMake(kCMTimeZero, clipVideoTrack.duration)
+//            
+//            let layerInstruction : AVMutableVideoCompositionLayerInstruction = AVMutableVideoCompositionLayerInstruction(assetTrack: assetTrack)
+//            let squareTransform : CGAffineTransform = CGAffineTransformMakeTranslation(assetTrack.naturalSize.height, 0);
+//            
+//            layerInstruction.setTransform(squareTransform, atTime: kCMTimeZero)
+//            instruction.layerInstructions.append(layerInstruction)
+//            videoComposition.instructions.append(instruction)
+//            
+//            let newFileName = NSUUID().UUIDString
+//            let url = self.completedRecordingURLPath(newFileName)
+//            
+//            self.createVideoExporterAndExport(videoComposition, asset: clipVideoTrack, completeMovieURL: url!)
+//        }
+//    }
+//
+//    func createVideoExporterAndExport(videoComposition : AVMutableVideoComposition, asset : AVAsset, completeMovieURL : NSURL)
+//    {
+//        let exporter : AVAssetExportSession? = AVAssetExportSession(asset: asset, presetName: AVAssetExportPresetMediumQuality)
+//        
+//        if let exporter = exporter
+//        {
+//            exporter.videoComposition = videoComposition
+//            exporter.outputURL = completeMovieURL
+//            exporter.outputFileType = AVFileTypeMPEG4 //AVFileTypeQuickTimeMovie
+//            exporter.exportAsynchronouslyWithCompletionHandler({
+//                
+//                [unowned self] in
+//                
+//                switch exporter.status {
+//                case  AVAssetExportSessionStatus.Failed:
+//                    print("failed \(exporter.error)")
+//                case AVAssetExportSessionStatus.Cancelled:
+//                    print("cancelled \(exporter.error)")
+//                default:
+//                    
+////                    let fileManager : NSFileManager = NSFileManager()
+////                    
+////                    do
+////                    {
+////                         try fileManager.removeItemAtURL(self.completedVideoURL!)
+////                    }
+////                    catch
+////                    {
+////                        
+////                    }
+//                    
+//                    self.completedVideoURL = completeMovieURL;
+//                    
+//                    self.delegate?.didFinishTask(self)
+//                }
+//            })
+//        }
+//    }
+    
     func completedRecordingURLPath(fileName: String?) -> NSURL?{
         
         if let file = fileName {
@@ -210,31 +406,12 @@ class RecordVideo : NSObject {
         } catch let error as NSError {
             print(error.localizedDescription)
         }
-        
-//        let fileManager : NSFileManager = NSFileManager.init()
-//        
-//        
-//        if (!fileManager.fileExistsAtPath(documentDirURL.path!)) {
-//            do {
-//                let folderPath = documentDirURL.path!
-//                let paths = try fileManager.contentsOfDirectoryAtPath(folderPath)
-//                for path in paths
-//                {
-//                    try fileManager.removeItemAtPath("\(folderPath)/\(path)")
-//                }
-//            } catch let error as NSError {
-//                print(error.localizedDescription)
-//            }
-//        }
-//        else {
-//            print("No file exists here.")
-//        }
     }
 }
 
 extension RecordVideo: AVCaptureVideoDataOutputSampleBufferDelegate, AVCaptureFileOutputRecordingDelegate {
     
     func captureOutput(captureOutput: AVCaptureFileOutput!, didFinishRecordingToOutputFileAtURL outputFileURL: NSURL!, fromConnections connections: [AnyObject]!, error: NSError!) {
-        print(outputFileURL);
+        print(connections)
     }
 }

@@ -40,17 +40,18 @@ class PreviewVideoController : UIViewController{
             self.player = AVPlayer(URL: (model?.contentURL)!)
             
             if let avPlayer = self.player {
-                let playerLayer = AVPlayerLayer(player: avPlayer)
+                
+                let playerLayer = AVPlayerLayer(player: self.player)
+                let height : CGFloat = CGRectGetHeight(self.previewVideoView.layer.frame)
+                let width : CGFloat = CGRectGetWidth(self.previewVideoView.layer.frame)
+                let rect : CGRect = CGRectMake(0.0, 0.0, width, height)
+                
+                playerLayer.frame = rect
                 
                 playerLayer.videoGravity = AVLayerVideoGravityResizeAspect
-                playerLayer.frame = self.previewVideoView.bounds
                 
-                let half : CGFloat = 2.0
-                
-                self.previewVideoView.transform = CGAffineTransformMakeRotation(CGFloat(M_PI)/half);
                 self.previewVideoView.layer.addSublayer(playerLayer)
 
-                
                 NSNotificationCenter.defaultCenter().addObserverForName(AVPlayerItemDidPlayToEndTimeNotification, object: self.player?.currentItem, queue: nil, usingBlock: { (NSNotification) -> Void in
                     
                     self.player?.currentItem?.seekToTime(kCMTimeZero)

@@ -21,6 +21,8 @@ class VideoCell: UITableViewCell {
         self.delegate?.tryLessonButtonHandlerTapped(self)
     }
     
+    @IBOutlet weak var profileUserName: UILabel!
+    @IBOutlet weak var profileImageView: UIImageView!
     @IBOutlet weak var detailLabel: UILabel!
     @IBOutlet weak var topLineDecoration: UIView!
     @IBOutlet weak var videoImageView: UIImageView!
@@ -54,8 +56,6 @@ class VideoCell: UITableViewCell {
                 else
                 {
                     let playerLayer = AVPlayerLayer(player: self.player)
-                    playerLayer.setAffineTransform(CGAffineTransformMakeRotation(CGFloat(M_PI)/2.0))
-                    
                     let height : CGFloat = CGRectGetHeight(self.videoImageView.layer.frame)
                     let width : CGFloat = CGRectGetWidth(self.videoImageView.layer.frame)
                     let rect : CGRect = CGRectMake(0.0, 0.0, width, height)
@@ -65,6 +65,8 @@ class VideoCell: UITableViewCell {
                     playerLayer.videoGravity = AVLayerVideoGravityResizeAspect
                     
                     self.videoImageView.layer.addSublayer(playerLayer)
+                    
+                
                 }
             }
             
@@ -113,3 +115,42 @@ class VideoCell: UITableViewCell {
         return indexPath.row == 0 ? true : false
     }
 }
+
+extension AVPlayerViewControllerDelegate
+{
+    func playerViewControllerWillStartPictureInPicture(playerViewController: AVPlayerViewController)
+    {
+        
+    }
+    
+    func playerViewControllerDidStartPictureInPicture(playerViewController: AVPlayerViewController)
+    {
+        
+    }
+    
+    func playerViewController(playerViewController: AVPlayerViewController, failedToStartPictureInPictureWithError error: NSError)
+    {
+        
+    }
+    
+    func playerViewControllerWillStopPictureInPicture(playerViewController: AVPlayerViewController)
+    {
+        
+    }
+    
+    func playerViewControllerDidStopPictureInPicture(playerViewController: AVPlayerViewController)
+    {
+        
+    }
+    
+    func playerViewControllerShouldAutomaticallyDismissAtPictureInPictureStart(playerViewController: AVPlayerViewController) -> Bool
+    {
+        return true
+    }
+    
+    func playerViewController(playerViewController: AVPlayerViewController, restoreUserInterfaceForPictureInPictureStopWithCompletionHandler completionHandler: (Bool) -> Void)
+    {
+        
+    }
+}
+

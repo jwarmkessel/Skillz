@@ -132,6 +132,9 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
                 cell.delegate = self
                 let videoPath = self.documentsURL.path! + "/" + vidName
                 cell.mediaPlayerLayer(videoPath, indexPath: indexPath)
+                
+                cell.profileUserName.text = indexPath.row == 0 ? "Justin Warmkessel" : "New User"
+                cell.profileImageView.image = indexPath.row == 0 ? UIImage(named:"Justin") : UIImage(named:"person-icon")
             }
             else
             {
