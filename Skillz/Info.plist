@@ -2,6 +2,14 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+	<key>NSAppleMusicUsageDescription</key>
+	<string>Required to use the stuff you create</string>
+	<key>NSCameraUsageDescription</key>
+	<string>Required to see you</string>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>Required to listen to your words.</string>
+	<key>NSSpeechRecognitionUsageDescription</key>
+	<string>Sure!</string>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>en</string>
 	<key>CFBundleExecutable</key>

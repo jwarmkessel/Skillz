@@ -8,9 +8,11 @@
 
 import Foundation
 import AVFoundation
+import Speech
 
 protocol RecordVideoDelegate: class {
-    func didFinishTask(sender: RecordVideo)
+    func didFinishTask(_ sender: RecordVideo)
+    func didFinishSpeechToText(_ sender: RecordVideo)
 }
 
 class RecordVideo : NSObject {
@@ -21,19 +23,19 @@ class RecordVideo : NSObject {
     var device          : AVCaptureDevice?
     var audioDevice     : AVCaptureDevice?
     var videoConnection : AVCaptureConnection?
-    let documentsURL                                    = NSFileManager.defaultManager().URLsForDirectory(.DocumentDirectory, inDomains: .UserDomainMask)[0]
-    var directoryName   : String?                       = NSUUID().UUIDString
+    let documentsURL                                    = FileManager.default.urlsForDirectory(.documentDirectory, inDomains: .userDomainMask)[0]
+    var speechToTextResults : String?
+    var directoryName   : String?                       = UUID().uuidString
     var arrayOfVideos   : [AnyObject]                   = [AnyObject]()
     var isRecording                                     = false
-    var elapsedTimer    : NSTimer?                      = nil
+    var elapsedTimer    : Timer?                      = nil
     var elapsedTime                                     = 0.0
     let kMaxSecondsForVideo                             = 10.0
     let captureFramesPerSecond                          = 30.0
     var elapsedProgressBarMovement : Double             = 0
-    var kTimerInterval : NSTimeInterval                 = 0.02
+    var kTimerInterval : TimeInterval                 = 0.02
     var previousCameraInput : AVCaptureInput?
-    var completedVideoURL : NSURL?
-    
+    var completedVideoURL : URL?
     
     func setupConnection() {        
        self.session?.startRunning()
@@ -41,6 +43,8 @@ class RecordVideo : NSObject {
     
     override init() {
         super.init()
+        
+        self.speechRecognizerPermission()
         
         if (self.checkDeviceMediaAvailability()) {
             self.setupMediaComponents()
@@ -51,17 +55,28 @@ class RecordVideo : NSObject {
     
     func setupMediaComponents () {
         
-        self.createSession()
-        self.createSessionInput()
-        self.createAudioInput()
-        self.createSessionOutput()
-        self.createMovieFileOutput()
+        var passed : Bool
+        
+        passed = self.createSession()
+        passed = self.createSessionInput()
+        passed = self.createAudioInput()
+        passed = self.createSessionOutput()
+        passed = self.createMovieFileOutput()
+        
+        if (passed == true)
+        {
+            print("All Systems are a GO!")
+        }
+        else
+        {
+            print("Media Failure")
+        }
     }
     
     func checkDeviceMediaAvailability() -> Bool {
-        var availability : Bool = false
+        var availability : Bool = Bool()
         
-        self.device = AVCaptureDevice.defaultDeviceWithMediaType(AVMediaTypeVideo)
+        self.device = AVCaptureDevice.defaultDevice(withMediaType: AVMediaTypeVideo)
         
         if (self.device != nil) {
             availability = true
@@ -72,7 +87,7 @@ class RecordVideo : NSObject {
         return availability
     }
     
-    func createSession() {
+    func createSession() -> Bool {
         session = AVCaptureSession()
         session?.sessionPreset = AVCaptureSessionPresetMedium
         
@@ -86,63 +101,154 @@ class RecordVideo : NSObject {
         }
         else
         {
-            //Failure case.
+            print("Issue creating session")
+        }
+        
+        if ((session) != nil)
+        {
+            return true
+        }
+        else
+        {
+            return false
         }
     }
     
-    func createSessionInput() {
+    func createSessionInput() -> Bool {
+        
+        var canCreateSessionInput : Bool = Bool()
+        
         do {
             /* Capture device input */
             let input = try AVCaptureDeviceInput(device: self.device)
             
-            session?.addInput(input)
+            if ((session?.canAddInput(input)) == true) {
+                session?.addInput(input)
+                canCreateSessionInput = true
+            }
+            else {
+                canCreateSessionInput = false
+            }
             
+            return canCreateSessionInput
         } catch {
-            print ("video initialization error")
+            print ("RecordVideo:createSessionInput() error")
+            
         }
+        
+        return canCreateSessionInput
     }
     
-    func createSessionOutput() {
-        let queue = dispatch_queue_create("com.skillz.videoCaptureQueue", nil)
+    func createSessionOutput() -> Bool {
+        var canCreateSessionOutput : Bool
+        
+        let queue = DispatchQueue(label: "com.skillz.videoCaptureQueue", attributes: [])
         
         self.dataOutput = AVCaptureVideoDataOutput()
         
-        if let output = self.dataOutput {
+        if let output = self.dataOutput , ((session?.canAddOutput(output)) == true){
             output.videoSettings = [kCVPixelBufferPixelFormatTypeKey : Int(kCVPixelFormatType_32BGRA)]
             output.setSampleBufferDelegate(self, queue: queue)
-            
             session?.addOutput(output)
+            
+            canCreateSessionOutput = true
         }
+        else
+        {
+            canCreateSessionOutput = false
+        }
+        
+        return canCreateSessionOutput
     }
     
-    func createAudioInput() {
-        AVAudioSession.sharedInstance().requestRecordPermission {
-            (granted: Bool) -> Void in
-            if granted {
-                self.audioDevice = AVCaptureDevice.defaultDeviceWithMediaType(AVMediaTypeAudio)
+    func createAudioInput() -> Bool  {
+        
+        var canCreateAudioInput : Bool = Bool()
+        let avAudioSession = AVAudioSession.sharedInstance()
+
+        if (isAudioSessionPermissionGranted(audioSession: avAudioSession))
+        {
+            self.audioDevice = AVCaptureDevice.defaultDevice(withMediaType: AVMediaTypeAudio)
+            
+            do {
+                let audioInput = try AVCaptureDeviceInput(device: self.audioDevice)
                 
-                do {
-                    let audioInput = try AVCaptureDeviceInput(device: self.audioDevice)
+                if ((self.session?.canAddInput(audioInput)) == true) {
                     self.session?.addInput(audioInput)
-                } catch {
+                    canCreateAudioInput = true
+                }
+                else {
                     print ("audio initialization error")
+                    canCreateAudioInput = false
+                }
+            } catch {
+                print ("audio initialization error")
+            }
+            
+            canCreateAudioInput = true
+        }
+        else
+        {
+            AVAudioSession.sharedInstance().requestRecordPermission {
+                (granted: Bool) -> Void in
+                if granted {
+                    self.audioDevice = AVCaptureDevice.defaultDevice(withMediaType: AVMediaTypeAudio)
+                    
+                    do {
+                        let audioInput = try AVCaptureDeviceInput(device: self.audioDevice)
+                        
+                        if ((self.session?.canAddInput(audioInput)) == true) {
+                            self.session?.addInput(audioInput)
+                            canCreateAudioInput = true
+                        }
+                        else {
+                            print ("audio initialization error")
+                            canCreateAudioInput = false
+                        }
+                    } catch {
+                        print ("audio initialization error")
+                    }
                 }
             }
+            
+            canCreateAudioInput = false
         }
+        
+        return canCreateAudioInput
     }
     
-    func createMovieFileOutput() {
+    func isAudioSessionPermissionGranted( audioSession : AVAudioSession) -> Bool {
+        
+        var isAudioPermissionGranted : Bool = Bool()
+        
+        let permission : AVAudioSessionRecordPermission = audioSession.recordPermission()
+        
+        if (permission == .undetermined) {
+            isAudioPermissionGranted = false
+        } else if (permission == .granted) {
+            isAudioPermissionGranted = true
+        } else if (permission == .denied) {
+            isAudioPermissionGranted = false
+        }
+        
+        return isAudioPermissionGranted
+    }
+    
+    func createMovieFileOutput() -> Bool {
+        
+        var canCreateMovieFileOutput : Bool = Bool()
+        
         self.movieFileOutput = AVCaptureMovieFileOutput()
 
         if let fileOutput : AVCaptureMovieFileOutput = self.movieFileOutput
         {
-            if let connections = fileOutput.connections
+            if let connections = fileOutput.availableVideoCodecTypes
             {
                 for connection in connections {
                     for port in connection.inputPorts! {
                         if port.mediaType == AVMediaTypeVideo {
                             self.videoConnection = connection as? AVCaptureConnection
-                            self.videoConnection?.videoOrientation = .Portrait
+                            self.videoConnection?.videoOrientation = .portrait
                             
                             
                             
@@ -152,12 +258,12 @@ class RecordVideo : NSObject {
                     
                     if self.videoConnection != nil {
                         
-                        fileOutput.setRecordsVideoOrientationAndMirroringChanges(true, asMetadataTrackForConnection: self.videoConnection)
+                        fileOutput.setRecordsVideoOrientationAndMirroringChanges(true, asMetadataTrackFor: self.videoConnection)
                         break
                     }
                 }
                 
-                self.videoConnection?.videoOrientation = .Portrait
+                self.videoConnection?.videoOrientation = .portrait
                 
                 
                 if (self.session?.canSetSessionPreset(AVCaptureSessionPreset640x480) != nil) {
@@ -174,29 +280,35 @@ class RecordVideo : NSObject {
         
         if (self.session?.canAddOutput(self.movieFileOutput) != nil) {
             self.session?.addOutput(self.movieFileOutput)
+            
+            canCreateMovieFileOutput = true
+        }
+        else
+        {
+            canCreateMovieFileOutput = false
         }
         
-        
+        return canCreateMovieFileOutput
     }
     
     func mixCompositionMerge() {
-        if let videos = self.arrayOfVideos as? [NSURL] {
+        if let videos = self.arrayOfVideos as? [URL] {
             
             let mixcomposition : AVMutableComposition = AVMutableComposition()
             let videoComposition : AVMutableVideoComposition = AVMutableVideoComposition()
             
             var current : CMTime = kCMTimeZero
             
-            for url : NSURL in videos {
+            for url : URL in videos {
                 
-                let asset = AVURLAsset.init(URL: url)
+                let asset = AVURLAsset.init(url: url)
                 
                 do {
                     
-                    try mixcomposition.insertTimeRange(CMTimeRangeMake(kCMTimeZero, asset.duration), ofAsset: asset, atTime: current)
+                    try mixcomposition.insertTimeRange(CMTimeRangeMake(kCMTimeZero, asset.duration), of: asset, at: current)
                     
-                    let assetVideoTrack : AVAssetTrack? = asset.tracksWithMediaType(AVMediaTypeVideo).first
-                    let compositionAssetTrack : AVMutableCompositionTrack? = mixcomposition.tracksWithMediaType(AVMediaTypeVideo).first
+                    let assetVideoTrack : AVAssetTrack? = asset.tracks(withMediaType: AVMediaTypeVideo).first
+                    let compositionAssetTrack : AVMutableCompositionTrack? = mixcomposition.tracks(withMediaType: AVMediaTypeVideo).first
                     
                     if let assetTrack = assetVideoTrack, let compTrack = compositionAssetTrack
                     {
@@ -219,26 +331,27 @@ class RecordVideo : NSObject {
                 current = CMTimeAdd(current, asset.duration);
             }
             
-            videoComposition.renderSize = CGSizeMake(480.0, 480.0)
+            videoComposition.renderSize = CGSize(width: 480.0, height: 480.0)
             videoComposition.frameDuration = CMTimeMake(1, 30);
-            let newFileName = NSUUID().UUIDString
+            let newFileName = UUID().uuidString
 
             self.createExporterAndExport(mixcomposition, videoComposition: videoComposition, completeMovieURL: self.completedRecordingURLPath(newFileName)!)
         }
     }
     
-    func createAssetCompositionInstruction(asset : AVAsset, videoComposition : AVMutableVideoComposition, current : CMTime) -> AVMutableVideoCompositionInstruction?
+    func createAssetCompositionInstruction(_ asset : AVAsset, videoComposition : AVMutableVideoComposition, current : CMTime) -> AVMutableVideoCompositionInstruction?
     {
-        let assetVideoTrack : AVAssetTrack? = asset.tracksWithMediaType(AVMediaTypeVideo).first
+        let assetVideoTrack : AVAssetTrack? = asset.tracks(withMediaType: AVMediaTypeVideo).first
         let instruction : AVMutableVideoCompositionInstruction =  AVMutableVideoCompositionInstruction()
         instruction.timeRange = CMTimeRangeMake(current, asset.duration)
         
         if let assetTrack = assetVideoTrack
         {
             let layerInstruction : AVMutableVideoCompositionLayerInstruction = AVMutableVideoCompositionLayerInstruction(assetTrack: assetTrack)
-            let squareTransform : CGAffineTransform = CGAffineTransformMakeTranslation(assetTrack.naturalSize.height, 0);
-            let finalTransform : CGAffineTransform = CGAffineTransformRotate(squareTransform, CGFloat(M_PI_2));
-            layerInstruction.setTransform(finalTransform, atTime: current)
+        
+            let squareTransform : CGAffineTransform = CGAffineTransform(translationX: assetTrack.naturalSize.height, y: 0);
+            let finalTransform : CGAffineTransform = squareTransform.rotate(CGFloat(M_PI_2));
+            layerInstruction.setTransform(finalTransform, at: current)
             instruction.layerInstructions.append(layerInstruction)
             
             return instruction
@@ -247,7 +360,7 @@ class RecordVideo : NSObject {
         return nil
     }
     
-    func createExporterAndExport(mixcomposition : AVMutableComposition, videoComposition : AVMutableVideoComposition, completeMovieURL : NSURL)
+    func createExporterAndExport(_ mixcomposition : AVMutableComposition, videoComposition : AVMutableVideoComposition, completeMovieURL : URL)
     {
         let exporter : AVAssetExportSession? = AVAssetExportSession(asset: mixcomposition, presetName: AVAssetExportPresetMediumQuality)
     
@@ -256,132 +369,32 @@ class RecordVideo : NSObject {
             exporter.videoComposition = videoComposition
             exporter.outputURL = completeMovieURL
             exporter.outputFileType = AVFileTypeMPEG4 //AVFileTypeQuickTimeMovie
-            exporter.exportAsynchronouslyWithCompletionHandler({
+            exporter.exportAsynchronously(
+                completionHandler: {
+                    [unowned self] in
                 
-                [unowned self] in
-                
-                switch exporter.status {
-                case  AVAssetExportSessionStatus.Failed:
-                    print("failed \(exporter.error)")
-                case AVAssetExportSessionStatus.Cancelled:
-                    print("cancelled \(exporter.error)")
-                default:
-                    self.completedVideoURL = completeMovieURL;
-                    self.delegate?.didFinishTask(self)
+                    switch exporter.status
+                    {
+                    case  AVAssetExportSessionStatus.failed:
+                        print("failed \(exporter.error)")
+                    case AVAssetExportSessionStatus.cancelled:
+                        print("cancelled \(exporter.error)")
+                    default:
+                        self.completedVideoURL = completeMovieURL;
+                        self.delegate?.didFinishTask(self)
+                    }
                 }
-            })
+            )
         }
     }
     
-//    func transformVideoToSquare(mixComposition : AVMutableComposition) ->AVMutableVideoComposition?
-//    {
-//        
-//        let videoComposition : AVMutableVideoComposition = AVMutableVideoComposition()
-//        
-//        videoComposition.frameDuration = mixComposition.duration
-//        
-//        let compTrackArray : [AVMutableCompositionTrack] = mixComposition.tracksWithMediaType(AVMediaTypeVideo)
-//        
-//        for assetTrack : AVMutableCompositionTrack in compTrackArray {
-//            videoComposition.renderSize = CGSizeMake(assetTrack.naturalSize.height, assetTrack.naturalSize.height)
-//            
-//            let instruction : AVMutableVideoCompositionInstruction =  AVMutableVideoCompositionInstruction()
-//            
-//            //FIXME: Mixcompositoin duration could be totally wrong
-//            instruction.timeRange = CMTimeRangeMake(kCMTimeZero, mixComposition.duration)
-//            
-//            let layerInstruction : AVMutableVideoCompositionLayerInstruction = AVMutableVideoCompositionLayerInstruction(assetTrack: assetTrack)
-//            let squareTransform : CGAffineTransform = CGAffineTransformMakeTranslation(assetTrack.naturalSize.height, 0);
-//            
-//            layerInstruction.setTransform(squareTransform, atTime: kCMTimeZero)
-//            instruction.layerInstructions.append(layerInstruction)
-//            videoComposition.instructions.append(instruction)
-//            
-//            
-//        }
-//        
-//        
-//    }
-    
-//    func transformVideoToSquare(asset : AVAsset) ->AVMutableVideoComposition?
-//    {
-//        
-//        let clipVideoTrack = AVURLAsset.init(URL: url)
-//        
-//        let videoComposition : AVMutableVideoComposition = AVMutableVideoComposition()
-//        
-//        videoComposition.frameDuration = clipVideoTrack.duration
-//
-//        let assetTrack : AVAssetTrack? = clipVideoTrack.tracksWithMediaType(AVMediaTypeVideo).first
-//        
-//        if let assetTrack = assetTrack
-//        {
-//            videoComposition.renderSize = CGSizeMake(assetTrack.naturalSize.height, assetTrack.naturalSize.height)
-//            
-//            let instruction : AVMutableVideoCompositionInstruction =  AVMutableVideoCompositionInstruction()
-//            
-//            instruction.timeRange = CMTimeRangeMake(kCMTimeZero, clipVideoTrack.duration)
-//            
-//            let layerInstruction : AVMutableVideoCompositionLayerInstruction = AVMutableVideoCompositionLayerInstruction(assetTrack: assetTrack)
-//            let squareTransform : CGAffineTransform = CGAffineTransformMakeTranslation(assetTrack.naturalSize.height, 0);
-//            
-//            layerInstruction.setTransform(squareTransform, atTime: kCMTimeZero)
-//            instruction.layerInstructions.append(layerInstruction)
-//            videoComposition.instructions.append(instruction)
-//            
-//            let newFileName = NSUUID().UUIDString
-//            let url = self.completedRecordingURLPath(newFileName)
-//            
-//            self.createVideoExporterAndExport(videoComposition, asset: clipVideoTrack, completeMovieURL: url!)
-//        }
-//    }
-//
-//    func createVideoExporterAndExport(videoComposition : AVMutableVideoComposition, asset : AVAsset, completeMovieURL : NSURL)
-//    {
-//        let exporter : AVAssetExportSession? = AVAssetExportSession(asset: asset, presetName: AVAssetExportPresetMediumQuality)
-//        
-//        if let exporter = exporter
-//        {
-//            exporter.videoComposition = videoComposition
-//            exporter.outputURL = completeMovieURL
-//            exporter.outputFileType = AVFileTypeMPEG4 //AVFileTypeQuickTimeMovie
-//            exporter.exportAsynchronouslyWithCompletionHandler({
-//                
-//                [unowned self] in
-//                
-//                switch exporter.status {
-//                case  AVAssetExportSessionStatus.Failed:
-//                    print("failed \(exporter.error)")
-//                case AVAssetExportSessionStatus.Cancelled:
-//                    print("cancelled \(exporter.error)")
-//                default:
-//                    
-////                    let fileManager : NSFileManager = NSFileManager()
-////                    
-////                    do
-////                    {
-////                         try fileManager.removeItemAtURL(self.completedVideoURL!)
-////                    }
-////                    catch
-////                    {
-////                        
-////                    }
-//                    
-//                    self.completedVideoURL = completeMovieURL;
-//                    
-//                    self.delegate?.didFinishTask(self)
-//                }
-//            })
-//        }
-//    }
-    
-    func completedRecordingURLPath(fileName: String?) -> NSURL?{
+    func completedRecordingURLPath(_ fileName: String?) -> URL?{
         
         if let file = fileName {
             
-            let path = documentsURL.path! + "/\(file).mp4"
+            let path = documentsURL.path! + "/\(file).mov"
             
-            return NSURL(fileURLWithPath: path)
+            return URL(fileURLWithPath: path)
         }
         
         return nil
@@ -391,27 +404,85 @@ class RecordVideo : NSObject {
         
         var documentDirURL = self.documentsURL
         
-        documentDirURL = documentDirURL.URLByAppendingPathComponent("recordingSession/")
-        documentDirURL = documentDirURL.URLByAppendingPathComponent("\(self.directoryName!)")
+        documentDirURL = try! documentDirURL.appendingPathComponent("recordingSession/")
+        documentDirURL = try! documentDirURL.appendingPathComponent("\(self.directoryName!)")
 
         
-        let fileManager : NSFileManager = NSFileManager.init()
+        let fileManager : FileManager = FileManager.init()
         do {
             let folderPath = documentDirURL.path!
-            let paths = try fileManager.contentsOfDirectoryAtPath(folderPath)
+            let paths = try fileManager.contentsOfDirectory(atPath: folderPath)
             for path in paths
             {
-                try fileManager.removeItemAtPath("\(folderPath)/\(path)")
+                try fileManager.removeItem(atPath: "\(folderPath)/\(path)")
             }
         } catch let error as NSError {
             print(error.localizedDescription)
+        }
+    }
+    
+    //pragma mark
+    func speechRecognizerPermission()
+    {
+        SFSpeechRecognizer.requestAuthorization { authStatus in
+            /*
+             The callback may not be called on the main thread. Add an
+             operation to the main queue to update the record button's state.
+             */
+            OperationQueue.main.addOperation {
+                switch authStatus {
+                case .authorized: break
+                    //User gave access to speech recognition
+                    
+                case .denied: break
+                    //User denied access to speech recognition
+                    
+                case .restricted: break
+                    //Speech recognition restricted on this device
+                    
+                case .notDetermined: break
+                    //Speech recognition not yet authorized
+                }
+            }
+        }
+    }
+    
+    func speechKitTest()
+    {
+        let mainBundle = Bundle.main
+        let urlString : String = mainBundle.pathForResource("justin", ofType: "mov")!
+        
+        
+        let fileURL : URL? = URL(fileURLWithPath: urlString)
+        
+        
+        let recognizer = SFSpeechRecognizer()
+        
+        if let filesurl = fileURL
+        {
+            let request = SFSpeechURLRecognitionRequest(url: filesurl)
+            
+            _ = (recognizer?.recognitionTask(with: request, resultHandler:
+                {
+                    (result, error)   in
+                    if let error = error
+                    {
+                        print("There was an error: \(error)")
+                    }
+                    else
+                    {
+                        self.speechToTextResults = result?.bestTranscription.formattedString
+                        print (result?.bestTranscription.formattedString)
+                    }
+                })
+            )!
         }
     }
 }
 
 extension RecordVideo: AVCaptureVideoDataOutputSampleBufferDelegate, AVCaptureFileOutputRecordingDelegate {
     
-    func captureOutput(captureOutput: AVCaptureFileOutput!, didFinishRecordingToOutputFileAtURL outputFileURL: NSURL!, fromConnections connections: [AnyObject]!, error: NSError!) {
+    func capture(_ captureOutput: AVCaptureFileOutput!, didFinishRecordingToOutputFileAt outputFileURL: URL!, fromConnections connections: [AnyObject]!, error: NSError!) {
         print(connections)
     }
 }

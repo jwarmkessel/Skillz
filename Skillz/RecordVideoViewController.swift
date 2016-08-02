@@ -10,15 +10,15 @@ import UIKit
 import AVFoundation
 
 protocol CaptureVideoDelegate {
-    func didCaptureVideo (recordViewController : RecordVideoViewController)
+    func didCaptureVideo (_ recordViewController : RecordVideoViewController)
 }
 
 class RecordVideoViewController: UIViewController {
     
     @IBOutlet weak var dismissControllerButton: UIButton!
     
-    @IBAction func endRecording(sender: AnyObject) {
-        self.view.userInteractionEnabled = false
+    @IBAction func endRecording(_ sender: AnyObject) {
+        self.view.isUserInteractionEnabled = false
         self.stopVideoRecording()
         self.mixCompositionMerge()
     }
@@ -30,7 +30,7 @@ class RecordVideoViewController: UIViewController {
     
     var delegate        : RecordVideoCellDelegate?
     var movieFileOutput : AVCaptureMovieFileOutput?     = nil
-    var elapsedTimer    : NSTimer?                      = nil
+    var elapsedTimer    : Timer?                      = nil
     var directoryName   : String?                       = nil
     var session         : AVCaptureSession?             = nil
     var previewLayer    : AVCaptureVideoPreviewLayer?   = nil
@@ -41,72 +41,72 @@ class RecordVideoViewController: UIViewController {
 
     let kMaxSecondsForVideo                             = 10.0
     let captureFramesPerSecond                          = 30.0
-    let documentsURL                                    = NSFileManager.defaultManager().URLsForDirectory(.DocumentDirectory, inDomains: .UserDomainMask)[0]
+    let documentsURL                                    = FileManager.default.urlsForDirectory(.documentDirectory, inDomains: .userDomainMask)[0]
     var elapsedProgressBarMovement : Double             = 0
-    var kTimerInterval : NSTimeInterval                 = 0.02
+    var kTimerInterval : TimeInterval                 = 0.02
     
     override func viewDidLoad() {
         super.viewDidLoad()
     }
     
-    override func viewDidAppear(animated: Bool) {
+    override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         
     }
     
-    override func viewWillAppear(animated: Bool) {
+    override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         
-        self.directoryName = NSUUID().UUIDString
+        self.directoryName = UUID().uuidString
         self.arrayOfVideos.removeAll()
         self.elapsedProgressBarMovement = 0
         self.elapsedTime = 0
         
-        self.view.userInteractionEnabled = true
+        self.view.isUserInteractionEnabled = true
         self.configureProgressView()
         
-        self.videoPreviewViewControl.addTarget(self, action: #selector(RecordVideoViewController.videoTouchDown(_:)), forControlEvents: .TouchDown)
-        self.videoPreviewViewControl.addTarget(self, action: #selector(RecordVideoViewController.videoTouchCancel(_:)), forControlEvents: .TouchCancel)
-        self.videoPreviewViewControl.addTarget(self, action: #selector(RecordVideoViewController.videoTouchUpInside(_:)), forControlEvents: .TouchUpInside)
-        self.videoPreviewViewControl.addTarget(self, action: #selector(RecordVideoViewController.videoTouchUpOutside(_:)), forControlEvents: .TouchUpOutside)
+        self.videoPreviewViewControl.addTarget(self, action: #selector(RecordVideoViewController.videoTouchDown(_:)), for: .touchDown)
+        self.videoPreviewViewControl.addTarget(self, action: #selector(RecordVideoViewController.videoTouchCancel(_:)), for: .touchCancel)
+        self.videoPreviewViewControl.addTarget(self, action: #selector(RecordVideoViewController.videoTouchUpInside(_:)), for: .touchUpInside)
+        self.videoPreviewViewControl.addTarget(self, action: #selector(RecordVideoViewController.videoTouchUpOutside(_:)), for: .touchUpOutside)
         
         
-        let device = AVCaptureDevice.defaultDeviceWithMediaType(AVMediaTypeVideo)
+        let device = AVCaptureDevice.defaultDevice(withMediaType: AVMediaTypeVideo)
         
         if device != nil {
             self.setupRecording()
         }
         
-        self.view.bringSubviewToFront(self.progressView)
+        self.view.bringSubview(toFront: self.progressView)
     }
     
-    func videoTouchUpOutside(event: UIControlEvents) {
+    func videoTouchUpOutside(_ event: UIControlEvents) {
         self.stopVideoRecording()
     }
     
-    func videoTouchUpInside(event: UIControlEvents) {
+    func videoTouchUpInside(_ event: UIControlEvents) {
         self.stopVideoRecording()
     }
     
-    func videoTouchCancel(event: UIControlEvents) {
+    func videoTouchCancel(_ event: UIControlEvents) {
         self.stopVideoRecording()
     }
     
-    func videoTouchDown(event: UIControlEvents) {
+    func videoTouchDown(_ event: UIControlEvents) {
         
-        elapsedTimer = NSTimer.scheduledTimerWithTimeInterval(kTimerInterval, target: self, selector: #selector(RecordVideoViewController.updateElapsedTime), userInfo: nil, repeats: true)
+        elapsedTimer = Timer.scheduledTimer(timeInterval: kTimerInterval, target: self, selector: #selector(RecordVideoViewController.updateElapsedTime), userInfo: nil, repeats: true)
         
-        if let newURL = self.generateVideoAbsoluteURLPath(NSUUID().UUIDString) {
+        if let newURL = self.generateVideoAbsoluteURLPath(UUID().uuidString) {
             self.arrayOfVideos.append(newURL)
-            movieFileOutput?.startRecordingToOutputFileURL(newURL, recordingDelegate: self)
+            movieFileOutput?.startRecording(toOutputFileURL: newURL, recordingDelegate: self)
         }
     }
     
     func configureProgressView() {
-        let transform : CGAffineTransform  = CGAffineTransformMakeScale(1.0, 50.0);
+        let transform : CGAffineTransform  = CGAffineTransform(scaleX: 1.0, y: 50.0);
         self.progressView.transform = transform
         
-        dispatch_async(dispatch_get_main_queue()) {
+        DispatchQueue.main.async {
             self.progressView.setProgress(0, animated: true)
         }
     }
@@ -118,7 +118,7 @@ class RecordVideoViewController: UIViewController {
         session?.sessionPreset = AVCaptureSessionPresetHigh
         
         
-        let device = AVCaptureDevice.defaultDeviceWithMediaType(AVMediaTypeVideo)
+        let device = AVCaptureDevice.defaultDevice(withMediaType: AVMediaTypeVideo)
         
         do {
             
@@ -136,17 +136,19 @@ class RecordVideoViewController: UIViewController {
             {
                 (granted: Bool) -> Void in
                 if granted {
-                    let audioCaptureDevice = AVCaptureDevice.defaultDeviceWithMediaType(AVMediaTypeAudio)
-                    do {
-                        let audioInput = try AVCaptureDeviceInput(device: audioCaptureDevice)
-                        self.session?.addInput(audioInput)
-                    } catch {
-                        print ("audio initialization error")
-                    }
+                    
                 }
         }
         
-        let queue = dispatch_queue_create("com.skillz.videoCaptureQueue", nil)
+        let audioCaptureDevice = AVCaptureDevice.defaultDevice(withMediaType: AVMediaTypeAudio)
+        do {
+            let audioInput = try AVCaptureDeviceInput(device: audioCaptureDevice)
+            self.session?.addInput(audioInput)
+        } catch {
+            print ("audio initialization error")
+        }
+        
+        let queue = DispatchQueue(label: "com.skillz.videoCaptureQueue", attributes: [])
         
         /* Video Output */
         
@@ -158,17 +160,17 @@ class RecordVideoViewController: UIViewController {
         /* Capture Video Preview Layer */
         previewLayer = AVCaptureVideoPreviewLayer (session: session)
         previewLayer?.videoGravity = AVLayerVideoGravityResizeAspectFill
-        previewLayer?.frame = CGRectMake(0, 50, videoPreviewViewControl.frame.size.width, videoPreviewViewControl.frame.size.height - 50)
+        previewLayer?.frame = CGRect(x: 0, y: 50, width: videoPreviewViewControl.frame.size.width, height: videoPreviewViewControl.frame.size.height - 50)
         
-        UIDevice.currentDevice().beginGeneratingDeviceOrientationNotifications()
+        UIDevice.current().beginGeneratingDeviceOrientationNotifications()
         
         //TODO: delete this code
         //let currentOrientation = UIDevice.currentDevice().orientation
-        UIDevice.currentDevice().endGeneratingDeviceOrientationNotifications()
+        UIDevice.current().endGeneratingDeviceOrientationNotifications()
         
         
         
-        previewLayer?.connection.videoOrientation = .Portrait
+        previewLayer?.connection.videoOrientation = .portrait
         videoPreviewViewControl.layer.addSublayer(previewLayer!)
         
         /* AVCaptureMovieFileOutput, Capture Movie File Output */
@@ -197,7 +199,7 @@ class RecordVideoViewController: UIViewController {
             }
         }
         
-        videoConnection?.videoOrientation = .Portrait
+        videoConnection?.videoOrientation = .portrait
         
         if (session?.canSetSessionPreset(AVCaptureSessionPreset640x480) != nil) {
             session?.sessionPreset = AVCaptureSessionPreset640x480
@@ -213,7 +215,7 @@ class RecordVideoViewController: UIViewController {
         
         elapsedProgressBarMovement += (percentagePerSecond / 100)
         
-        UIView.animateWithDuration(kTimerInterval) {
+        UIView.animate(withDuration: kTimerInterval) {
             
             self.progressView.progress = Float(self.elapsedProgressBarMovement)
             
@@ -241,7 +243,7 @@ class RecordVideoViewController: UIViewController {
     }
     
     //MARK: Touch Down
-    @IBAction func recVideoButtonTouchDown(sender: UIButton) {
+    @IBAction func recVideoButtonTouchDown(_ sender: UIButton) {
         //        elapsedTimer = NSTimer.scheduledTimerWithTimeInterval(kTimerInterval, target: self, selector: Selector("updateElapsedTime"), userInfo: nil, repeats: true)
         //        sender.setImage(UIImage (named: "ButtonStop"), forState: UIControlState.Normal)
         //
@@ -253,38 +255,38 @@ class RecordVideoViewController: UIViewController {
         //        }
     }
     
-    func createRecordingSessionDirectoryStructure(directoryPath : String) {
-        let fileManager : NSFileManager = NSFileManager.init()
-        if (!fileManager.fileExistsAtPath(directoryPath)) {
+    func createRecordingSessionDirectoryStructure(_ directoryPath : String) {
+        let fileManager : FileManager = FileManager.init()
+        if (!fileManager.fileExists(atPath: directoryPath)) {
             do {
-                try NSFileManager.defaultManager().createDirectoryAtPath(directoryPath, withIntermediateDirectories: true, attributes: nil)
+                try FileManager.default.createDirectory(atPath: directoryPath, withIntermediateDirectories: true, attributes: nil)
             } catch {
                 print("RecordVideoViewController: Could not create directory from the method createRecordingSessionDirectoryStructure()")
             }
         }
     }
     
-    func generateVideoAbsoluteURLPath(fileName: String?) -> NSURL?{
+    func generateVideoAbsoluteURLPath(_ fileName: String?) -> URL?{
         
         self.createRecordingSessionDirectoryStructure(documentsURL.path! + "/recordingSession/")
         
         if let file = fileName {
             self.createRecordingSessionDirectoryStructure(documentsURL.path! + "/recordingSession/\(self.directoryName!)")
-            let path = documentsURL.path! + "/recordingSession/\(self.directoryName!)/\(file)" + ".mp4"
+            let path = documentsURL.path! + "/recordingSession/\(self.directoryName!)/\(file)" + ".mov"
             
-            return NSURL(fileURLWithPath: path)
+            return URL(fileURLWithPath: path)
         }
         
         return nil
     }
     
-    func completedRecordingURLPath(fileName: String?) -> NSURL?{
+    func completedRecordingURLPath(_ fileName: String?) -> URL?{
     
         if let file = fileName {
         
-            let path = documentsURL.path! + "/\(file).mp4"
+            let path = documentsURL.path! + "/\(file).mov"
             
-            return NSURL(fileURLWithPath: path)
+            return URL(fileURLWithPath: path)
         }
         
         return nil
@@ -306,7 +308,7 @@ class RecordVideoViewController: UIViewController {
     
     
     //MARK: Touch Up
-    @IBAction func recVideoButtonTouchUpInside(sender: UIButton) {
+    @IBAction func recVideoButtonTouchUpInside(_ sender: UIButton) {
         //self.stopVideoRecording()
     }
     
@@ -355,19 +357,19 @@ class RecordVideoViewController: UIViewController {
     }
     
     func mixCompositionMerge() {
-        if let videos = self.arrayOfVideos as? [NSURL] {
+        if let videos = self.arrayOfVideos as? [URL] {
             
             let mixcomposition : AVMutableComposition = AVMutableComposition()
             
             var current : CMTime = kCMTimeZero
             
-            for url : NSURL in videos {
+            for url : URL in videos {
                 
-                let asset = AVURLAsset.init(URL: url)
+                let asset = AVURLAsset.init(url: url)
                 
                 do {
                     
-                    try mixcomposition.insertTimeRange(CMTimeRangeMake(kCMTimeZero, asset.duration), ofAsset: asset, atTime: current)
+                    try mixcomposition.insertTimeRange(CMTimeRangeMake(kCMTimeZero, asset.duration), of: asset, at: current)
                     
                 } catch {
                     
@@ -388,25 +390,25 @@ class RecordVideoViewController: UIViewController {
             
             let exporter = AVAssetExportSession(asset: mixcomposition, presetName: AVAssetExportPresetHighestQuality)
             
-            let newFileName = NSUUID().UUIDString
+            let newFileName = UUID().uuidString
             
             if let exporter = exporter, let completeMovieURL = self.completedRecordingURLPath(newFileName){
                 
                 exporter.outputURL = completeMovieURL
                 exporter.outputFileType = AVFileTypeMPEG4 //AVFileTypeQuickTimeMovie
                 
-                exporter.exportAsynchronouslyWithCompletionHandler({
+                exporter.exportAsynchronously(completionHandler: {
                     
                     [unowned self] in
                     
                     switch exporter.status {
-                        case  AVAssetExportSessionStatus.Failed:
+                        case  AVAssetExportSessionStatus.failed:
                             print("failed \(exporter.error)")
-                        case AVAssetExportSessionStatus.Cancelled:
+                        case AVAssetExportSessionStatus.cancelled:
                             print("cancelled \(exporter.error)")
                         default:
                             print("complete")
-                            dispatch_async(dispatch_get_main_queue(), { () -> Void in
+                            DispatchQueue.main.async(execute: { () -> Void in
                                 self.tabBarController?.selectedIndex =  0
                             })
                     }
@@ -418,7 +420,7 @@ class RecordVideoViewController: UIViewController {
 
 extension RecordVideoViewController: AVCaptureVideoDataOutputSampleBufferDelegate, AVCaptureFileOutputRecordingDelegate {
     
-    func captureOutput(captureOutput: AVCaptureFileOutput!, didFinishRecordingToOutputFileAtURL outputFileURL: NSURL!, fromConnections connections: [AnyObject]!, error: NSError!) {
+    func capture(_ captureOutput: AVCaptureFileOutput!, didFinishRecordingToOutputFileAt outputFileURL: URL!, fromConnections connections: [AnyObject]!, error: NSError!) {
         print(outputFileURL);
         //self.generateThumbnailFromVideo()
     }

@@ -18,22 +18,22 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
     //MARK: properties
     var model : FeedModel?
     let kEstimatedRowHeight : CGFloat = 600.0
-    let documentsURL = NSFileManager.defaultManager().URLsForDirectory(.DocumentDirectory, inDomains: .UserDomainMask)[0]
+    let documentsURL = FileManager.default.urlsForDirectory(.documentDirectory, inDomains: .userDomainMask)[0]
     
 
     //MARK: UIViewController
-    override func viewWillDisappear(animated: Bool) {
+    override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         
-        NSNotificationCenter.defaultCenter().removeObserver(self)
+        NotificationCenter.default.removeObserver(self)
     }
     
-    override func viewWillAppear(animated: Bool) {
+    override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         
         self.configureTableView()
-        self.view.userInteractionEnabled = true
-        self.tableView.userInteractionEnabled = true
+        self.view.isUserInteractionEnabled = true
+        self.tableView.isUserInteractionEnabled = true
         self.configureNavigationBar()
         
         guard let feedModel = self.model else {
@@ -47,24 +47,24 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
     }
     
     override func preferredStatusBarStyle() -> UIStatusBarStyle {
-        return .LightContent
+        return .lightContent
     }
     
     override func viewDidLoad() {
         super.viewDidLoad()
         self.setNeedsStatusBarAppearanceUpdate()
         
-        self.navigationController?.navigationBarHidden = true
+        self.navigationController?.isNavigationBarHidden = true
         self.model = FeedModel.init()
     }
     
     //MARK: UITableViewDelegate
     
-    func tableView(tableView: UITableView, estimatedHeightForRowAtIndexPath indexPath: NSIndexPath) -> CGFloat {
+    func tableView(_ tableView: UITableView, estimatedHeightForRowAt indexPath: IndexPath) -> CGFloat {
         return UITableViewAutomaticDimension
     }
     
-    func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         var count = 0
         
         if let model = self.model, let videos = model.videos {
@@ -74,41 +74,41 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         return count
     }
     
-    func numberOfSectionsInTableView(tableView: UITableView) -> Int {
+    func numberOfSections(in tableView: UITableView) -> Int {
         return (self.model?.sections.count)!
     }
   
-    func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         
-        let cell : VideoCell = (self.tableView.cellForRowAtIndexPath(indexPath) as? VideoCell)!
+        let cell : VideoCell = (self.tableView.cellForRow(at: indexPath) as? VideoCell)!
         
         if (cell.player?.rate == 0.0)
         {
             cell.player?.play()
-            cell.player?.muted = false
+            cell.player?.isMuted = false
         }
         else
         {
             cell.player?.pause()
-            cell.player?.muted = true
+            cell.player?.isMuted = true
         }
     }
     
-    func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell
     {
         var cell : UITableViewCell?
         
-        if let model = self.model, let vid = model.videos, let obj : AnyObject? = vid[indexPath.row] {
+        if let model = self.model, let vid = model.videos, let obj : AnyObject? = vid[(indexPath as NSIndexPath).row] {
             
             // Valid video
             if let _ = obj as? String {
                 cell = self.configureVideoCell(tableView, indexPath: indexPath)
                 
             } else if let dictionary : NSDictionary = obj as? NSDictionary {
-                if let message : String? = dictionary.objectForKey("message") as? String {
+                if let message : String? = dictionary.object(forKey: "message") as? String {
                     cell = UITableViewCell()
                     cell?.textLabel?.text = message
-                    cell?.textLabel?.textAlignment = .Center
+                    cell?.textLabel?.textAlignment = .center
                 }
             }
         }
@@ -120,18 +120,17 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         return validCell;
     }
     
-    func configureVideoCell(tableView: UITableView, indexPath : NSIndexPath) -> VideoCell? {
+    func configureVideoCell(_ tableView: UITableView, indexPath : IndexPath) -> VideoCell? {
 
-        if let cell : VideoCell = tableView.dequeueReusableCellWithIdentifier("videoCell", forIndexPath: indexPath) as? VideoCell
+        if let cell : VideoCell = tableView.dequeueReusableCell(withIdentifier: "videoCell", for: indexPath) as? VideoCell
         {
-            if let feedModel = model, let videos = feedModel.videos, let obj : AnyObject? = videos[indexPath.row], let vidName = obj as? String
+            if let feedModel = model, let videos = feedModel.videos, let obj : AnyObject? = videos[(indexPath as NSIndexPath).row], let vidName = obj as? String
             {
                 cell.delegate = self
                 let videoPath = self.documentsURL.path! + "/" + vidName
                 cell.mediaPlayerLayer(videoPath, indexPath: indexPath)
-                
-                cell.profileUserName.text = indexPath.row == 0 ? "Justin Warmkessel" : "New User"
-                cell.profileImageView.image = indexPath.row == 0 ? UIImage(named:"Justin") : UIImage(named:"person-icon")
+                cell.profileUserName.text = (indexPath as NSIndexPath).row == 0 ? "Justin Warmkessel" : "New User"
+                cell.profileImageView.image = (indexPath as NSIndexPath).row == 0 ? UIImage(named:"Justin") : UIImage(named:"person-icon")
             }
             else
             {
@@ -155,8 +154,8 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         }
         
         navController.navigationBar.barTintColor = UIColor(red: 255.0/255.0, green: 69.0/255.0, blue: 0, alpha: 1.0)
-        navController.navigationBar.barStyle = UIBarStyle.Black
-        navController.navigationBar.tintColor = UIColor.whiteColor()
+        navController.navigationBar.barStyle = UIBarStyle.black
+        navController.navigationBar.tintColor = UIColor.white()
     }
     
     func configureTableView() {
@@ -167,11 +166,11 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
     }
     
     //MARK: VideoCellDelegate
-    func tryLessonButtonHandlerTapped(videoCell: VideoCell) {
+    func tryLessonButtonHandlerTapped(_ videoCell: VideoCell) {
         videoCell.player?.pause()
         
         let storyboard = UIStoryboard(name: "Main", bundle: nil)
-        let vc = storyboard.instantiateViewControllerWithIdentifier("RecordVideoNavigationController") as! UINavigationController
-        self.presentViewController(vc, animated: true, completion: nil)
+        let vc = storyboard.instantiateViewController(withIdentifier: "RecordVideoNavigationController") as! UINavigationController
+        self.present(vc, animated: true, completion: nil)
     }
 }

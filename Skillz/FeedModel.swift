@@ -11,20 +11,20 @@ import MediaPlayer
 import AVKit
 
 enum FeedState {
-    case Success
-    case Error
-    case NoContent
-    case Loading
+    case success
+    case error
+    case noContent
+    case loading
 }
 
 class FeedModel: NSObject {
-    let documentsURL = NSFileManager.defaultManager().URLsForDirectory(.DocumentDirectory, inDomains: .UserDomainMask)[0]
+    let documentsURL = FileManager.default.urlsForDirectory(.documentDirectory, inDomains: .userDomainMask)[0]
     var thumbnails  : [AnyObject?]? = nil
     var videos      : [AnyObject?]? = nil
     var sections    : [Int] = [1]
     var error       : [AnyObject?]?
     var noContent   : [AnyObject?]?
-    var state       : FeedState = .Loading
+    var state       : FeedState = .loading
     
     override init() {
         super.init()
@@ -38,7 +38,7 @@ class FeedModel: NSObject {
         //DEBUG: 
         if (self.videos?.count < 1)
         {
-            let path = NSBundle.mainBundle().pathForResource("InstructorDavid", ofType: "mp4")
+            let path = Bundle.main.pathForResource("InstructorDavid", ofType: "mov")
             
             if let stringPath = path
             {
@@ -47,15 +47,18 @@ class FeedModel: NSObject {
         }
     }
     func pathsForAllImages () -> [AnyObject?]? {
-        let url = NSFileManager.defaultManager().URLsForDirectory(.DocumentDirectory, inDomains: .UserDomainMask)[0]
+        let url = FileManager.default.urlsForDirectory(.documentDirectory, inDomains: .userDomainMask)[0]
         var array:[AnyObject?]? = nil
         
-        let properties = [NSURLLocalizedNameKey, NSURLCreationDateKey, NSURLLocalizedTypeDescriptionKey]
+        let properties : [String]! = [URLResourceKey.localizedNameKey.rawValue, URLResourceKey.creationDateKey.rawValue, URLResourceKey.localizedTypeDescriptionKey.rawValue]
         
         print (url);
         
         do {
-            let directoryUrls = try NSFileManager.defaultManager().contentsOfDirectoryAtURL(url, includingPropertiesForKeys: properties, options:NSDirectoryEnumerationOptions.SkipsHiddenFiles)
+//            let directoryUrls = try FileManager.default.contentsOfDirectory(at: url, includingPropertiesForKeys: properties, options:FileManager.DirectoryEnumerationOptions.skipsHiddenFiles)
+            
+            let directoryUrls = try FileManager.default.contentsOfDirectory(at: url, includingPropertiesForKeys: properties, options: FileManager.DirectoryEnumerationOptions.skipsHiddenFiles)
+            
             array = directoryUrls.map(){ $0.lastPathComponent }.filter(){ ($0! as! NSString).pathExtension == "jpg" }
             if array?.count == 0 {
                 array = nil
@@ -73,11 +76,11 @@ class FeedModel: NSObject {
         var array : [AnyObject?]? = [String]()
         
         // We need just to get the documents folder url
-        let documentsUrl =  NSFileManager.defaultManager().URLsForDirectory(.DocumentDirectory, inDomains: .UserDomainMask).first!
+        let documentsUrl =  FileManager.default.urlsForDirectory(.documentDirectory, inDomains: .userDomainMask).first!
         
         // now lets get the directory contents (including folders)
         do {
-            let directoryContents = try NSFileManager.defaultManager().contentsOfDirectoryAtURL(documentsUrl, includingPropertiesForKeys: nil, options: NSDirectoryEnumerationOptions())
+            let directoryContents = try FileManager.default.contentsOfDirectory(at: documentsUrl, includingPropertiesForKeys: nil, options: FileManager.DirectoryEnumerationOptions())
             print(directoryContents)
             
         } catch let error as NSError {
@@ -86,12 +89,12 @@ class FeedModel: NSObject {
         // if you want to filter the directory contents you can do like this:
         
         do {
-            let directoryUrls = try  NSFileManager.defaultManager().contentsOfDirectoryAtURL(documentsUrl, includingPropertiesForKeys: nil, options: NSDirectoryEnumerationOptions())
+            let directoryUrls = try  FileManager.default.contentsOfDirectory(at: documentsUrl, includingPropertiesForKeys: nil, options: FileManager.DirectoryEnumerationOptions())
             print(directoryUrls)
             
             array = directoryUrls.map(){
                 $0.lastPathComponent }.filter(){
-                    ($0! as! NSString).pathExtension == "mp4"
+                    ($0! as! NSString).pathExtension == "mov"
             }
             
         } catch let error as NSError {
@@ -107,11 +110,11 @@ class FeedModel: NSObject {
         var array : [AnyObject?]? = [String]()
         
         // We need just to get the documents folder url
-        let documentsUrl =  NSFileManager.defaultManager().URLsForDirectory(.DocumentDirectory, inDomains: .UserDomainMask).first!
+        let documentsUrl =  FileManager.default.urlsForDirectory(.documentDirectory, inDomains: .userDomainMask).first!
         
         // now lets get the directory contents (including folders)
         do {
-            let directoryContents = try NSFileManager.defaultManager().contentsOfDirectoryAtURL(documentsUrl, includingPropertiesForKeys: nil, options: NSDirectoryEnumerationOptions())
+            let directoryContents = try FileManager.default.contentsOfDirectory(at: documentsUrl, includingPropertiesForKeys: nil, options: FileManager.DirectoryEnumerationOptions())
             print(directoryContents)
             
         } catch let error as NSError {
@@ -120,12 +123,12 @@ class FeedModel: NSObject {
         // if you want to filter the directory contents you can do like this:
         
         do {
-            let directoryUrls = try  NSFileManager.defaultManager().contentsOfDirectoryAtURL(documentsUrl, includingPropertiesForKeys: nil, options: NSDirectoryEnumerationOptions())
+            let directoryUrls = try  FileManager.default.contentsOfDirectory(at: documentsUrl, includingPropertiesForKeys: nil, options: FileManager.DirectoryEnumerationOptions())
             print(directoryUrls)
             
             array = directoryUrls.map(){
                 $0.lastPathComponent }.filter(){
-                    ($0! as! NSString).pathExtension == "mp4"
+                    ($0! as! NSString).pathExtension == "mov"
             }
             
         } catch let error as NSError {

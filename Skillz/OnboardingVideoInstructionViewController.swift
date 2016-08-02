@@ -8,42 +8,71 @@
 
 import UIKit
 import MediaPlayer
+import Speech
 //import AVKit
 
 class OnboardingVideoInstructionViewController: UIViewController {
     @IBOutlet weak var videoImageView: UIImageView!
     @IBOutlet weak var beginButton: UIButton!
    
-    @IBAction func beginButtonHandler(sender: UIButton, forEvent event: UIEvent) {
+    @IBAction func beginButtonHandler(_ sender: UIButton, forEvent event: UIEvent) {
         let storyboard = UIStoryboard(name: "Main", bundle: nil)
-        let vc = storyboard.instantiateViewControllerWithIdentifier("MainTabBarController")
+        let vc = storyboard.instantiateViewController(withIdentifier: "MainTabBarController")
         
-        UIApplication.sharedApplication().keyWindow?.rootViewController = vc
+        UIApplication.shared().keyWindow?.rootViewController = vc
     }
     var player : AVPlayer?
     var playerLayer : AVPlayerLayer?
     
+    //pragma mark
+    func speechRecognizerPermission()
+    {
+        SFSpeechRecognizer.requestAuthorization { authStatus in
+            /*
+             The callback may not be called on the main thread. Add an
+             operation to the main queue to update the record button's state.
+             */
+            OperationQueue.main.addOperation {
+                switch authStatus {
+                case .authorized: break
+                    //User gave access to speech recognition
+                    
+                case .denied: break
+                    //User denied access to speech recognition
+                    
+                case .restricted: break
+                    //Speech recognition restricted on this device
+                    
+                case .notDetermined: break
+                    //Speech recognition not yet authorized
+                }
+            }
+        }
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        self.speechRecognizerPermission()
 
         // Do any additional setup after loading the view.
-        let path = NSBundle.mainBundle().pathForResource("InstructorDavid", ofType: "mp4")
+        let path = Bundle.main.pathForResource("Instructor", ofType: "mov")
         
         if let pathString = path
         {
-            let fileManager : NSFileManager = NSFileManager()
-            if (fileManager.fileExistsAtPath(pathString))
+            let fileManager : FileManager = FileManager()
+            if (fileManager.fileExists(atPath: pathString))
             {
-                let pathURL : NSURL = NSURL.init(fileURLWithPath: pathString, isDirectory: false)
+                let pathURL : URL = URL.init(fileURLWithPath: pathString, isDirectory: false)
                 
-                self.player = AVPlayer.init(URL: pathURL)
+                self.player = AVPlayer.init(url: pathURL)
                 self.playerLayer = AVPlayerLayer(player: self.player)
     
                 if let playerLayer = self.playerLayer
                 {    
-                    let height : CGFloat = CGRectGetHeight(self.videoImageView.layer.frame)
-                    let width : CGFloat = CGRectGetWidth(self.videoImageView.layer.frame)
-                    let rect : CGRect = CGRectMake(0.0, 0.0, height, width + 20.0)
+                    let height : CGFloat = self.videoImageView.layer.frame.height
+                    let width : CGFloat = self.videoImageView.layer.frame.width
+                    let rect : CGRect = CGRect(x: 0.0, y: 0.0, width: height, height: width + 20.0)
     
                     playerLayer.frame = rect
     
@@ -51,9 +80,9 @@ class OnboardingVideoInstructionViewController: UIViewController {
     
                     self.videoImageView.layer.addSublayer(playerLayer)
                     
-//                    if let player = self.player {
-//                        player.play()
-//                    }
+                    if let player = self.player {
+                        player.play()
+                    }
                 }
             }
         }

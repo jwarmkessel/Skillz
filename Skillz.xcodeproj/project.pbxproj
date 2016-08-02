@@ -22,14 +22,16 @@
 		7B4E65D61C7C0B1900F05662 /* VideoPreviewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 7B4E65D51C7C0B1900F05662 /* VideoPreviewCell.xib */; };
 		7B4E65D91C7C230400F05662 /* RecordVideoCellTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B4E65D71C7C230400F05662 /* RecordVideoCellTableViewCell.swift */; };
 		7B4E65DA1C7C230400F05662 /* RecordVideoCellTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 7B4E65D81C7C230400F05662 /* RecordVideoCellTableViewCell.xib */; };
+		7B6A5C961D4C2E7000D05DFA /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7B6A5C951D4C2E7000D05DFA /* AudioToolbox.framework */; };
 		7B7339F51CBC9F8100235F13 /* PreviewVideo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B7339F41CBC9F8100235F13 /* PreviewVideo.swift */; };
 		7B7339F71CBC9FB400235F13 /* PreviewVideoController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B7339F61CBC9FB400235F13 /* PreviewVideoController.swift */; };
 		7B7339F91CBCA0FF00235F13 /* RecordViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B7339F81CBCA0FF00235F13 /* RecordViewController.swift */; };
 		7B7339FB1CBCA11800235F13 /* RecordVideo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B7339FA1CBCA11800235F13 /* RecordVideo.swift */; };
-		7B8AE6801CE9469400706829 /* InstructorDavid.mp4 in Resources */ = {isa = PBXBuildFile; fileRef = 7B8AE67F1CE9469400706829 /* InstructorDavid.mp4 */; };
 		7B9FFFBA1CEAB5C9005B349D /* Onboarding.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 7B9FFFB81CEAB5C9005B349D /* Onboarding.storyboard */; };
 		7BC260801C5EDAE9006070F7 /* video1.mp4 in Resources */ = {isa = PBXBuildFile; fileRef = 7BC2607E1C5EDAE9006070F7 /* video1.mp4 */; };
 		7BC260811C5EDAE9006070F7 /* video2.mp4 in Resources */ = {isa = PBXBuildFile; fileRef = 7BC2607F1C5EDAE9006070F7 /* video2.mp4 */; };
+		7BC600141D4B055B001CF0B8 /* Speech.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7B7B98C21D4B028A00205B21 /* Speech.framework */; };
+		7BC600181D4BD2A5001CF0B8 /* justin.mov in Resources */ = {isa = PBXBuildFile; fileRef = 7BC600171D4BD2A5001CF0B8 /* justin.mov */; };
 		7BF9D2371C475F4A00AAE727 /* VideoCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BF9D2361C475F4A00AAE727 /* VideoCell.swift */; };
 /* End PBXBuildFile section */
 
@@ -64,14 +66,16 @@
 		7B4E65D51C7C0B1900F05662 /* VideoPreviewCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = VideoPreviewCell.xib; sourceTree = "<group>"; };
 		7B4E65D71C7C230400F05662 /* RecordVideoCellTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RecordVideoCellTableViewCell.swift; sourceTree = "<group>"; };
 		7B4E65D81C7C230400F05662 /* RecordVideoCellTableViewCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = RecordVideoCellTableViewCell.xib; sourceTree = "<group>"; };
+		7B6A5C951D4C2E7000D05DFA /* AudioToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioToolbox.framework; path = System/Library/Frameworks/AudioToolbox.framework; sourceTree = SDKROOT; };
 		7B7339F41CBC9F8100235F13 /* PreviewVideo.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PreviewVideo.swift; sourceTree = "<group>"; };
 		7B7339F61CBC9FB400235F13 /* PreviewVideoController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PreviewVideoController.swift; sourceTree = "<group>"; };
 		7B7339F81CBCA0FF00235F13 /* RecordViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RecordViewController.swift; sourceTree = "<group>"; };
 		7B7339FA1CBCA11800235F13 /* RecordVideo.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RecordVideo.swift; sourceTree = "<group>"; };
-		7B8AE67F1CE9469400706829 /* InstructorDavid.mp4 */ = {isa = PBXFileReference; lastKnownFileType = file; path = InstructorDavid.mp4; sourceTree = "<group>"; };
+		7B7B98C21D4B028A00205B21 /* Speech.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Speech.framework; path = System/Library/Frameworks/Speech.framework; sourceTree = SDKROOT; };
 		7B9FFFB91CEAB5C9005B349D /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Skillz/Base.lproj/Onboarding.storyboard; sourceTree = "<group>"; };
 		7BC2607E1C5EDAE9006070F7 /* video1.mp4 */ = {isa = PBXFileReference; lastKnownFileType = file; path = video1.mp4; sourceTree = "<group>"; };
 		7BC2607F1C5EDAE9006070F7 /* video2.mp4 */ = {isa = PBXFileReference; lastKnownFileType = file; path = video2.mp4; sourceTree = "<group>"; };
+		7BC600171D4BD2A5001CF0B8 /* justin.mov */ = {isa = PBXFileReference; lastKnownFileType = video.quicktime; path = justin.mov; sourceTree = "<group>"; };
 		7BF9D2361C475F4A00AAE727 /* VideoCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VideoCell.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -80,6 +84,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				7BC600141D4B055B001CF0B8 /* Speech.framework in Frameworks */,
+				7B6A5C961D4C2E7000D05DFA /* AudioToolbox.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -109,7 +115,8 @@
 				7B04F1391C4750BB003C2E03 /* AppDelegate.swift */,
 				7B04F1381C4750BB003C2E03 /* Skillz */,
 				7B04F1501C4750BB003C2E03 /* SkillzTests */,
-				7B04F1371C4750BB003C2E03 /* Products */,
+				7B79D9B11D1F452500C70FCC /* Framework */,
+				7B7B98C11D4B028A00205B21 /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -155,7 +162,6 @@
 		7B7339ED1CBC9C3200235F13 /* Resources */ = {
 			isa = PBXGroup;
 			children = (
-				7B8AE67F1CE9469400706829 /* InstructorDavid.mp4 */,
 				7B7339EE1CBC9C5B00235F13 /* Deletable */,
 				7B04F15C1C4751D7003C2E03 /* Skillz.entitlements */,
 				7B04F1481C4750BB003C2E03 /* Info.plist */,
@@ -168,6 +174,7 @@
 		7B7339EE1CBC9C5B00235F13 /* Deletable */ = {
 			isa = PBXGroup;
 			children = (
+				7BC600171D4BD2A5001CF0B8 /* justin.mov */,
 				7BC2607E1C5EDAE9006070F7 /* video1.mp4 */,
 				7BC2607F1C5EDAE9006070F7 /* video2.mp4 */,
 			);
@@ -206,6 +213,23 @@
 				7B7339F41CBC9F8100235F13 /* PreviewVideo.swift */,
 			);
 			name = PreviewVideo;
+			sourceTree = "<group>";
+		};
+		7B79D9B11D1F452500C70FCC /* Framework */ = {
+			isa = PBXGroup;
+			children = (
+				7B04F1371C4750BB003C2E03 /* Products */,
+			);
+			name = Framework;
+			sourceTree = "<group>";
+		};
+		7B7B98C11D4B028A00205B21 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				7B6A5C951D4C2E7000D05DFA /* AudioToolbox.framework */,
+				7B7B98C21D4B028A00205B21 /* Speech.framework */,
+			);
+			name = Frameworks;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -259,6 +283,7 @@
 					7B04F1351C4750BB003C2E03 = {
 						CreatedOnToolsVersion = 7.1.1;
 						DevelopmentTeam = 9J6N543K6L;
+						LastSwiftMigration = 0800;
 						SystemCapabilities = {
 							com.apple.BackgroundModes = {
 								enabled = 0;
@@ -266,10 +291,14 @@
 							com.apple.HealthKit = {
 								enabled = 0;
 							};
+							com.apple.InterAppAudio = {
+								enabled = 1;
+							};
 						};
 					};
 					7B04F14C1C4750BB003C2E03 = {
 						CreatedOnToolsVersion = 7.1.1;
+						LastSwiftMigration = 0800;
 						TestTargetID = 7B04F1351C4750BB003C2E03;
 					};
 				};
@@ -304,9 +333,9 @@
 				7BC260811C5EDAE9006070F7 /* video2.mp4 in Resources */,
 				7B04F1471C4750BB003C2E03 /* LaunchScreen.storyboard in Resources */,
 				7B4E65DA1C7C230400F05662 /* RecordVideoCellTableViewCell.xib in Resources */,
+				7BC600181D4BD2A5001CF0B8 /* justin.mov in Resources */,
 				7B04F1441C4750BB003C2E03 /* Assets.xcassets in Resources */,
 				7B04F13F1C4750BB003C2E03 /* Main.storyboard in Resources */,
-				7B8AE6801CE9469400706829 /* InstructorDavid.mp4 in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -425,7 +454,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 9.1;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = iphoneos;
@@ -463,7 +492,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 9.1;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				SDKROOT = iphoneos;
 				VALIDATE_PRODUCT = YES;
@@ -474,13 +503,19 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = Skillz/Skillz.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/Skillz/ExternalResources/frameworks",
+				);
 				INFOPLIST_FILE = Skillz/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.mythworthy.Skillz;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "";
+				SWIFT_VERSION = 3.0;
 			};
 			name = Debug;
 		};
@@ -488,13 +523,19 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = Skillz/Skillz.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/Skillz/ExternalResources/frameworks",
+				);
 				INFOPLIST_FILE = Skillz/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.mythworthy.Skillz;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "";
+				SWIFT_VERSION = 3.0;
 			};
 			name = Release;
 		};
@@ -506,6 +547,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.mythworthy.SkillzTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 3.0;
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Skillz.app/Skillz";
 			};
 			name = Debug;
@@ -518,6 +560,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.mythworthy.SkillzTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 3.0;
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Skillz.app/Skillz";
 			};
 			name = Release;
