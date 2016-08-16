@@ -47,7 +47,7 @@
 
 /* Begin PBXFileReference section */
 		7B04F1361C4750BB003C2E03 /* Skillz.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Skillz.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		7B04F1391C4750BB003C2E03 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = AppDelegate.swift; path = Skillz/AppDelegate.swift; sourceTree = "<group>"; };
+		7B04F1391C4750BB003C2E03 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		7B04F13E1C4750BB003C2E03 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		7B04F1411C4750BB003C2E03 /* Skillz.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = Skillz.xcdatamodel; sourceTree = "<group>"; };
 		7B04F1431C4750BB003C2E03 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -109,10 +109,6 @@
 		7B04F12D1C4750BB003C2E03 = {
 			isa = PBXGroup;
 			children = (
-				7B9FFFB81CEAB5C9005B349D /* Onboarding.storyboard */,
-				7B04F13D1C4750BB003C2E03 /* Main.storyboard */,
-				7B04F1451C4750BB003C2E03 /* LaunchScreen.storyboard */,
-				7B04F1391C4750BB003C2E03 /* AppDelegate.swift */,
 				7B04F1381C4750BB003C2E03 /* Skillz */,
 				7B04F1501C4750BB003C2E03 /* SkillzTests */,
 				7B79D9B11D1F452500C70FCC /* Framework */,
@@ -132,9 +128,7 @@
 		7B04F1381C4750BB003C2E03 /* Skillz */ = {
 			isa = PBXGroup;
 			children = (
-				7B17A2FF1CEC3E7F002DD46D /* Onboarding */,
-				7B7339F11CBC9E4500235F13 /* PreviewVideo */,
-				7B7339F01CBC9C9500235F13 /* RecordVideo */,
+				7B615FD21D62AA100016E862 /* Storyboards */,
 				7B7339EF1CBC9C7E00235F13 /* Home */,
 				7B7339ED1CBC9C3200235F13 /* Resources */,
 				361A0FE71C7D757000838E39 /* DataModel */,
@@ -157,6 +151,26 @@
 				7B17A3001CEC3E9F002DD46D /* OnboardingVideoInstructionViewController.swift */,
 			);
 			name = Onboarding;
+			sourceTree = "<group>";
+		};
+		7B615FD11D62A9F40016E862 /* Main */ = {
+			isa = PBXGroup;
+			children = (
+				7B04F1391C4750BB003C2E03 /* AppDelegate.swift */,
+				7B04F1641C475614003C2E03 /* ViewController.swift */,
+				7B3CB0431C5043780025EF7D /* FeedModel.swift */,
+			);
+			name = Main;
+			sourceTree = "<group>";
+		};
+		7B615FD21D62AA100016E862 /* Storyboards */ = {
+			isa = PBXGroup;
+			children = (
+				7B9FFFB81CEAB5C9005B349D /* Onboarding.storyboard */,
+				7B04F13D1C4750BB003C2E03 /* Main.storyboard */,
+				7B04F1451C4750BB003C2E03 /* LaunchScreen.storyboard */,
+			);
+			name = Storyboards;
 			sourceTree = "<group>";
 		};
 		7B7339ED1CBC9C3200235F13 /* Resources */ = {
@@ -184,8 +198,10 @@
 		7B7339EF1CBC9C7E00235F13 /* Home */ = {
 			isa = PBXGroup;
 			children = (
-				7B04F1641C475614003C2E03 /* ViewController.swift */,
-				7B3CB0431C5043780025EF7D /* FeedModel.swift */,
+				7B615FD11D62A9F40016E862 /* Main */,
+				7B17A2FF1CEC3E7F002DD46D /* Onboarding */,
+				7B7339F11CBC9E4500235F13 /* PreviewVideo */,
+				7B7339F01CBC9C9500235F13 /* RecordVideo */,
 			);
 			name = Home;
 			sourceTree = "<group>";
@@ -395,7 +411,6 @@
 				7B04F13E1C4750BB003C2E03 /* Base */,
 			);
 			name = Main.storyboard;
-			path = Skillz;
 			sourceTree = "<group>";
 		};
 		7B04F1451C4750BB003C2E03 /* LaunchScreen.storyboard */ = {
@@ -404,7 +419,6 @@
 				7B04F1461C4750BB003C2E03 /* Base */,
 			);
 			name = LaunchScreen.storyboard;
-			path = Skillz;
 			sourceTree = "<group>";
 		};
 		7B9FFFB81CEAB5C9005B349D /* Onboarding.storyboard */ = {
@@ -413,6 +427,7 @@
 				7B9FFFB91CEAB5C9005B349D /* Base */,
 			);
 			name = Onboarding.storyboard;
+			path = ..;
 			sourceTree = "<group>";
 		};
 /* End PBXVariantGroup section */

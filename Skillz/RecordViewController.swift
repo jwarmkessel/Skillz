@@ -92,15 +92,6 @@ class RecordViewController: UIViewController, RecordVideoDelegate {
             {
                 //Nothing to do
             }
-            
-            //TODO Replace with an asset which is the preview of the recorded video
-            //TODO Show the translated text at the bottom of the view
-            
-            //FIXME: The code below segues to the next screen.
-            //        DispatchQueue.main.async {
-            //            [unowned self] in
-            //            self.performSegue(withIdentifier: self.kPreviewRecordedVideoSegueIdentifier, sender: self)
-            //        }
         }
     }
     
