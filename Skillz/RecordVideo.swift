@@ -11,7 +11,7 @@ import AVFoundation
 import Speech
 
 protocol RecordVideoDelegate: class {
-    func didFinishTask(_ sender: RecordVideo)
+    func didFinishVideoEditingTask(_ sender: RecordVideo)
     func didFinishSpeechToText(_ sender: RecordVideo)
 }
 
@@ -381,7 +381,7 @@ class RecordVideo : NSObject {
                         print("cancelled \(exporter.error)")
                     default:
                         self.completedVideoURL = completeMovieURL;
-                        self.delegate?.didFinishTask(self)
+                        self.delegate?.didFinishVideoEditingTask(self)
                     }
                 }
             )
@@ -447,36 +447,47 @@ class RecordVideo : NSObject {
         }
     }
     
-    func speechKitTest()
+    func speechKitTest(fileURL : URL)
     {
-        let mainBundle = Bundle.main
-        let urlString : String = mainBundle.pathForResource("justin", ofType: "mov")!
-        
-        
-        let fileURL : URL? = URL(fileURLWithPath: urlString)
-        
+        SFSpeechRecognizer.requestAuthorization { authStatus in
+            /*
+             The callback may not be called on the main thread. Add an
+             operation to the main queue to update the record button's state.
+             */
+            OperationQueue.main.addOperation {
+                switch authStatus {
+                case .authorized: break
+                    //User gave access to speech recognition
+                    
+                case .denied: break
+                    //User denied access to speech recognition
+                    
+                case .restricted: break
+                    //Speech recognition restricted on this device
+                    
+                case .notDetermined: break
+                    //Speech recognition not yet authorized
+                }
+            }
+        }
         
         let recognizer = SFSpeechRecognizer()
-        
-        if let filesurl = fileURL
-        {
-            let request = SFSpeechURLRecognitionRequest(url: filesurl)
-            
-            _ = (recognizer?.recognitionTask(with: request, resultHandler:
+        let request = SFSpeechURLRecognitionRequest(url: fileURL)
+        let recognitionTask: SFSpeechRecognitionTask = (recognizer?.recognitionTask(with: request, resultHandler:
+            {
+                (result, error)   in
+                if let error = error
                 {
-                    (result, error)   in
-                    if let error = error
-                    {
-                        print("There was an error: \(error)")
-                    }
-                    else
-                    {
-                        self.speechToTextResults = result?.bestTranscription.formattedString
-                        print (result?.bestTranscription.formattedString)
-                    }
-                })
+                    print("There was an error: \(error)")
+                }
+                else
+                {
+                    print (result?.bestTranscription.formattedString)
+                }
+        })
             )!
-        }
+        
+        print(recognitionTask)
     }
 }
 

@@ -20,6 +20,8 @@ class RecordViewController: UIViewController, RecordVideoDelegate {
     
     var model           : RecordVideo                   = RecordVideo()
     var previewLayer    : AVCaptureVideoPreviewLayer?
+    var playerLayer     : AVPlayerLayer?
+    var player          : AVPlayer?
     
     @IBOutlet weak var instructionContentMetaDataTextView: UITextView!
     @IBOutlet weak var previewView: UIView!
@@ -63,11 +65,42 @@ class RecordViewController: UIViewController, RecordVideoDelegate {
         
     }
     
-    func didFinishTask(_ sender: RecordVideo)
+    func didFinishVideoEditingTask(_ sender: RecordVideo)
     {
         DispatchQueue.main.async {
-            [unowned self] in
-            self.performSegue(withIdentifier: self.kPreviewRecordedVideoSegueIdentifier, sender: self)
+            //TODO Update buttons and actions
+            //TODO Replace the camera preview layer
+            
+            if let videoURL = self.model.completedVideoURL, let previewLayer = self.previewLayer
+            {
+                previewLayer.isHidden = true
+                self.player = AVPlayer.init(url: videoURL)
+                
+                if self.playerLayer == nil
+                {
+                    self.playerLayer = AVPlayerLayer.init()
+                    self.playerLayer!.bounds = CGRect(x: 0, y: 0, width: 750.0, height: 824.0)
+                }
+                
+                self.videoPreviewViewControl.layer.addSublayer(self.playerLayer!)
+                
+                self.playerLayer?.player = self.player
+                
+                self.player?.play()
+            }
+            else
+            {
+                //Nothing to do
+            }
+            
+            //TODO Replace with an asset which is the preview of the recorded video
+            //TODO Show the translated text at the bottom of the view
+            
+            //FIXME: The code below segues to the next screen.
+            //        DispatchQueue.main.async {
+            //            [unowned self] in
+            //            self.performSegue(withIdentifier: self.kPreviewRecordedVideoSegueIdentifier, sender: self)
+            //        }
         }
     }
     
@@ -79,23 +112,23 @@ class RecordViewController: UIViewController, RecordVideoDelegate {
             self.previewLayer = AVCaptureVideoPreviewLayer.init(session: session)
         }
         
-        if let layer = self.previewLayer {
-            layer.videoGravity = AVLayerVideoGravityResizeAspectFill
+        if let previewLayer = self.previewLayer {
+            previewLayer.videoGravity = AVLayerVideoGravityResizeAspectFill
         
             //FIXME: This is super broken. Will only work for 6S
-            layer.bounds = CGRect(x: 0, y: 0, width: 750.0, height: 824.0)
+            previewLayer.bounds = CGRect(x: 0, y: 0, width: 750.0, height: 824.0)
 //            layer.frame = videoPreviewViewControl.frame
             
             self.view.layoutIfNeeded()
             self.view.setNeedsLayout()
             
-            if let connector = layer.connection
+            if let connector = previewLayer.connection
             {
                 connector.videoOrientation = .portrait
             }
             
             //Attach to UIView
-            videoPreviewViewControl.layer.addSublayer(layer)
+            videoPreviewViewControl.layer.addSublayer(previewLayer)
         }
         
         UIDevice.current().endGeneratingDeviceOrientationNotifications()
