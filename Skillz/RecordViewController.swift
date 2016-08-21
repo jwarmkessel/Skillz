@@ -15,19 +15,27 @@ enum CameraType {
     case back
 }
 
-class RecordViewController: UIViewController, RecordVideoDelegate {
+enum VideoRecordingState {
+    case Unfinished
+    case Processing
+    case Finished
+}
+
+class RecordViewController: EDUViewController, RecordVideoDelegate {
     let kPreviewRecordedVideoSegueIdentifier  = "previewRecordedVideo"
     
-    var model           : RecordVideo                   = RecordVideo()
-    var previewLayer    : AVCaptureVideoPreviewLayer?
-    var playerLayer     : AVPlayerLayer?
-    var player          : AVPlayer?
+    var model               : RecordVideo                   = RecordVideo()
+    var previewLayer        : AVCaptureVideoPreviewLayer?
+    var playerLayer         : AVPlayerLayer?
+    var player              : AVPlayer?
+    var videoRecordingState : VideoRecordingState = .Unfinished
     
     @IBOutlet weak var instructionContentMetaDataTextView: UITextView!
     @IBOutlet weak var previewView: UIView!
     @IBOutlet weak var progressView: UIProgressView!
     @IBOutlet weak var videoPreviewViewControl: UIImageView!
     @IBOutlet weak var flipCameraButton: UIButton!
+    @IBOutlet weak var saveButton: UIButton!
     
     @IBAction func cancelButtonHandler(_ sender: AnyObject) {
         self.dismiss(animated: true, completion: nil)
@@ -36,6 +44,7 @@ class RecordViewController: UIViewController, RecordVideoDelegate {
     @IBAction func flipCameraButtonHandler(_ sender: AnyObject) {
         self.reloadCamera()
     }
+    
     func resetElapsedTime() {
         model.elapsedProgressBarMovement = 0
         model.elapsedTime = 0
@@ -46,6 +55,12 @@ class RecordViewController: UIViewController, RecordVideoDelegate {
     }
     
     @IBAction func resetButtonHandler(_ sender: AnyObject) {
+        
+        self.videoRecordingState = .Unfinished
+        saveButton.setTitle("Save", for: UIControlState.normal)
+        self.previewLayer?.isHidden = false
+        self.playerLayer?.isHidden = true
+        
         self.resetElapsedTime()
         self.removeAllComponentVideosBeingTracked()
         self.configureProgressView()
@@ -54,39 +69,81 @@ class RecordViewController: UIViewController, RecordVideoDelegate {
         self.view.isUserInteractionEnabled = true
     }
     
-    @IBAction func saveButtonHandler(_ sender: AnyObject) {
+    @IBAction func saveButtonHandler(_ sender: UIButton) {
 
-        self.stopVideoRecording()
-        model.mixCompositionMerge()
+        switch(videoRecordingState)
+        {
+        case .Finished:
+            
+            if let navController = self.navigationController
+            {
+                navController.dismiss(animated: true, completion: nil)
+            }
+            break
+            
+        case .Unfinished:
+            
+            self.showActivityIndicator(frame: self.view.frame)
+            self.videoRecordingState = .Processing
+            sender.setTitle("Done", for: UIControlState.normal)
+            
+            self.stopVideoRecording()
+            self.model.mixCompositionMerge()
+
+            break
+            
+        case .Processing:
+            print("This is a totally unexpected state")
+            break
+        }
     }
     
     //pragma mark - RecordVideoDelegate
     func didFinishSpeechToText(_ sender: RecordVideo) {
+        self.videoRecordingState = .Finished
+        self.hideActivityIndicator()
+        self.instructionContentMetaDataTextView.text = model.speechToTextResults
         
+        if let videoURL = self.model.completedVideoURL, let previewLayer = self.previewLayer
+        {
+            previewLayer.isHidden = true
+            self.player = AVPlayer.init(url: videoURL)
+            
+            if self.playerLayer == nil
+            {
+                self.playerLayer = AVPlayerLayer.init()
+                self.playerLayer!.bounds = CGRect(x: 0, y: 0, width: 750.0, height: 824.0)
+            }
+            else
+            {
+                self.playerLayer?.isHidden = false
+            }
+            
+            self.videoPreviewViewControl.layer.addSublayer(self.playerLayer!)
+            
+            self.playerLayer?.player = self.player
+            
+            self.player?.play()
+            
+            NotificationCenter.default.addObserver(forName: NSNotification.Name.AVPlayerItemDidPlayToEndTime, object: self.player?.currentItem, queue: nil, using: { (NSNotification) -> Void in
+                
+                self.player?.currentItem?.seek(to: kCMTimeZero)
+                self.player?.play()
+            })
+        }
+        else
+        {
+            //Nothing to do
+        }
     }
     
     func didFinishVideoEditingTask(_ sender: RecordVideo)
     {
         DispatchQueue.main.async {
-            //TODO Update buttons and actions
-            //TODO Replace the camera preview layer
             
-            if let videoURL = self.model.completedVideoURL, let previewLayer = self.previewLayer
+            if let completedVideoURL = self.model.completedVideoURL
             {
-                previewLayer.isHidden = true
-                self.player = AVPlayer.init(url: videoURL)
-                
-                if self.playerLayer == nil
-                {
-                    self.playerLayer = AVPlayerLayer.init()
-                    self.playerLayer!.bounds = CGRect(x: 0, y: 0, width: 750.0, height: 824.0)
-                }
-                
-                self.videoPreviewViewControl.layer.addSublayer(self.playerLayer!)
-                
-                self.playerLayer?.player = self.player
-                
-                self.player?.play()
+                self.model.speechKitTest(fileURL: completedVideoURL)
             }
             else
             {

@@ -265,6 +265,7 @@
                         <outlet property="instructionContentMetaDataTextView" destination="ypG-1S-yOG" id="FWb-2c-LSS"/>
                         <outlet property="previewView" destination="41g-tT-vi0" id="6Km-Md-iGx"/>
                         <outlet property="progressView" destination="c3b-vO-xde" id="ZY2-8E-OAd"/>
+                        <outlet property="saveButton" destination="P15-wP-856" id="J8t-kH-Rsc"/>
                         <outlet property="videoPreviewViewControl" destination="Kms-tU-Krl" id="JFv-n2-K5I"/>
                         <segue destination="7Fb-dn-R6c" kind="show" identifier="previewRecordedVideo" id="xx8-oI-lhZ"/>
                     </connections>
@@ -323,7 +324,7 @@
                         <viewControllerLayoutGuide type="bottom" id="KWE-fU-PQ6"/>
                     </layoutGuides>
                     <view key="view" contentMode="scaleToFill" id="azz-do-oaA">
-                        <rect key="frame" x="0.0" y="0.0" width="414" height="736"/>
+                        <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="SK1-wm-PBQ" userLabel="Video Preview" customClass="UIControl">
@@ -398,7 +399,7 @@
                         <viewControllerLayoutGuide type="bottom" id="Z9L-k5-MS1"/>
                     </layoutGuides>
                     <view key="view" contentMode="scaleToFill" id="5KQ-0i-CqU">
-                        <rect key="frame" x="0.0" y="0.0" width="414" height="736"/>
+                        <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                     </view>

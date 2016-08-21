@@ -13,7 +13,7 @@ protocol CaptureVideoDelegate {
     func didCaptureVideo (_ recordViewController : RecordVideoViewController)
 }
 
-class RecordVideoViewController: UIViewController {
+class RecordVideoViewController: EDUViewController {
     
     @IBOutlet weak var dismissControllerButton: UIButton!
     
@@ -30,20 +30,18 @@ class RecordVideoViewController: UIViewController {
     
     var delegate        : RecordVideoCellDelegate?
     var movieFileOutput : AVCaptureMovieFileOutput?     = nil
-    var elapsedTimer    : Timer?                      = nil
+    var elapsedTimer    : Timer?                        = nil
     var directoryName   : String?                       = nil
     var session         : AVCaptureSession?             = nil
     var previewLayer    : AVCaptureVideoPreviewLayer?   = nil
     var arrayOfVideos   : [AnyObject]                   = [AnyObject]()
     var isRecording                                     = false
-    
     var elapsedTime                                     = 0.0
-
     let kMaxSecondsForVideo                             = 10.0
     let captureFramesPerSecond                          = 30.0
     let documentsURL                                    = FileManager.default.urlsForDirectory(.documentDirectory, inDomains: .userDomainMask)[0]
     var elapsedProgressBarMovement : Double             = 0
-    var kTimerInterval : TimeInterval                 = 0.02
+    var kTimerInterval : TimeInterval                   = 0.02
     
     override func viewDidLoad() {
         super.viewDidLoad()

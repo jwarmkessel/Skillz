@@ -27,6 +27,7 @@
 		7B7339F71CBC9FB400235F13 /* PreviewVideoController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B7339F61CBC9FB400235F13 /* PreviewVideoController.swift */; };
 		7B7339F91CBCA0FF00235F13 /* RecordViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B7339F81CBCA0FF00235F13 /* RecordViewController.swift */; };
 		7B7339FB1CBCA11800235F13 /* RecordVideo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B7339FA1CBCA11800235F13 /* RecordVideo.swift */; };
+		7B924B161D6A4C8300DF441B /* EDUViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B924B151D6A4C8300DF441B /* EDUViewController.swift */; };
 		7B9FFFBA1CEAB5C9005B349D /* Onboarding.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 7B9FFFB81CEAB5C9005B349D /* Onboarding.storyboard */; };
 		7BC260801C5EDAE9006070F7 /* video1.mp4 in Resources */ = {isa = PBXBuildFile; fileRef = 7BC2607E1C5EDAE9006070F7 /* video1.mp4 */; };
 		7BC260811C5EDAE9006070F7 /* video2.mp4 in Resources */ = {isa = PBXBuildFile; fileRef = 7BC2607F1C5EDAE9006070F7 /* video2.mp4 */; };
@@ -72,6 +73,7 @@
 		7B7339F81CBCA0FF00235F13 /* RecordViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RecordViewController.swift; sourceTree = "<group>"; };
 		7B7339FA1CBCA11800235F13 /* RecordVideo.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RecordVideo.swift; sourceTree = "<group>"; };
 		7B7B98C21D4B028A00205B21 /* Speech.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Speech.framework; path = System/Library/Frameworks/Speech.framework; sourceTree = SDKROOT; };
+		7B924B151D6A4C8300DF441B /* EDUViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EDUViewController.swift; sourceTree = "<group>"; };
 		7B9FFFB91CEAB5C9005B349D /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Skillz/Base.lproj/Onboarding.storyboard; sourceTree = "<group>"; };
 		7BC2607E1C5EDAE9006070F7 /* video1.mp4 */ = {isa = PBXFileReference; lastKnownFileType = file; path = video1.mp4; sourceTree = "<group>"; };
 		7BC2607F1C5EDAE9006070F7 /* video2.mp4 */ = {isa = PBXFileReference; lastKnownFileType = file; path = video2.mp4; sourceTree = "<group>"; };
@@ -198,6 +200,7 @@
 		7B7339EF1CBC9C7E00235F13 /* Home */ = {
 			isa = PBXGroup;
 			children = (
+				7B924B141D6A4C5900DF441B /* Utilities */,
 				7B615FD11D62A9F40016E862 /* Main */,
 				7B17A2FF1CEC3E7F002DD46D /* Onboarding */,
 				7B7339F11CBC9E4500235F13 /* PreviewVideo */,
@@ -246,6 +249,14 @@
 				7B7B98C21D4B028A00205B21 /* Speech.framework */,
 			);
 			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		7B924B141D6A4C5900DF441B /* Utilities */ = {
+			isa = PBXGroup;
+			children = (
+				7B924B151D6A4C8300DF441B /* EDUViewController.swift */,
+			);
+			name = Utilities;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -372,6 +383,7 @@
 				7B0F5A541C7D66C20059581D /* RecordVideoViewController.swift in Sources */,
 				7B7339F71CBC9FB400235F13 /* PreviewVideoController.swift in Sources */,
 				7B17A3011CEC3E9F002DD46D /* OnboardingVideoInstructionViewController.swift in Sources */,
+				7B924B161D6A4C8300DF441B /* EDUViewController.swift in Sources */,
 				7BF9D2371C475F4A00AAE727 /* VideoCell.swift in Sources */,
 				7B7339F51CBC9F8100235F13 /* PreviewVideo.swift in Sources */,
 				7B4E65D41C7C0AE100F05662 /* VideoPreviewCell.swift in Sources */,

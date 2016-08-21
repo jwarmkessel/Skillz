@@ -56,7 +56,6 @@ class PreviewVideoController : UIViewController{
                 
                 //FIXME: This is super broken. Will only work for 6S
 //                playerLayer.frame = rect
-
                 
                 playerLayer.bounds = CGRect(x: 0, y: 0, width: 750.0, height: 824.0)
                 

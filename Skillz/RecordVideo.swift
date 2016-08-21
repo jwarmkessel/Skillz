@@ -37,6 +37,9 @@ class RecordVideo : NSObject {
     var previousCameraInput : AVCaptureInput?
     var completedVideoURL : URL?
     
+    var recognitionTask: SFSpeechRecognitionTask?
+    var recognizer = SFSpeechRecognizer()
+    
     func setupConnection() {        
        self.session?.startRunning()
     }
@@ -249,8 +252,6 @@ class RecordVideo : NSObject {
                         if port.mediaType == AVMediaTypeVideo {
                             self.videoConnection = connection as? AVCaptureConnection
                             self.videoConnection?.videoOrientation = .portrait
-                            
-                            
                             
                             break
                         }
@@ -471,23 +472,35 @@ class RecordVideo : NSObject {
             }
         }
         
-        let recognizer = SFSpeechRecognizer()
-        let request = SFSpeechURLRecognitionRequest(url: fileURL)
-        let recognitionTask: SFSpeechRecognitionTask = (recognizer?.recognitionTask(with: request, resultHandler:
-            {
-                (result, error)   in
-                if let error = error
-                {
-                    print("There was an error: \(error)")
-                }
-                else
-                {
-                    print (result?.bestTranscription.formattedString)
-                }
-        })
-            )!
+        self.recognizer = SFSpeechRecognizer()
         
-        print(recognitionTask)
+        let request = SFSpeechURLRecognitionRequest(url: fileURL)
+        self.recognitionTask = (recognizer?.recognitionTask(with: request, resultHandler:
+            {
+                    (result, error)   in
+                    if let error = error
+                    {
+                        print("There was an error: \(error)")
+                        
+                        if (self.recognitionTask!.isFinishing)
+                        {
+                            self.speechToTextResults = "[There was an error processing the audio]"
+                            self.delegate!.didFinishSpeechToText(self)
+                        }
+                    }
+                    else
+                    {
+                        print (result?.bestTranscription.formattedString)
+                        
+                        if (self.recognitionTask!.isFinishing)
+                        {
+                            self.speechToTextResults = result?.bestTranscription.formattedString
+                            self.delegate!.didFinishSpeechToText(self)
+                        }
+                    }
+                }
+            )
+        )!
     }
 }
 
